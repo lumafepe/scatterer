@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from 'react';
 import CardDetails from '../../../components/CardDetails';
+import NavBar from "../../../components/NavBar";
 import { Card } from '../../../interfaces';
 
 const CardPage: React.FC = () => {
@@ -23,14 +24,12 @@ const CardPage: React.FC = () => {
   }, [slug]);
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-4">Card Details</h1>
-      {cardData ? (
-        <CardDetails card={cardData} />
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
+    <NavBar>
+       <div className="container mx-auto p-4">
+          <h1 className="text-4xl font-bold mb-4">Card Details</h1>
+          {cardData ? (<CardDetails card={cardData} />) : (<p>Loading...</p>)}
+      </div>
+    </NavBar>
   );
 };
 

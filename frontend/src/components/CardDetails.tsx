@@ -27,7 +27,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ card }) => {
             alt={card.name}
             layout="fill"
             objectFit="contain"
-            className="transform hover:scale- transition-transform duration-300" // Scale up on hover
+            className="transform hover:scale-2120 transition-transform duration-300" // Scale up on hover
           />
         </div>
         <div className="flex-1"> {/* Container for card name and basic information */}
