@@ -1,8 +1,8 @@
 import React from 'react';
-import { Printing } from '../interfaces';
+import { Set } from '../interfaces';
 
 interface PrintingsProps {
-  printings: Printing[];
+  printings: Set[];
 }
 
 const Printings: React.FC<PrintingsProps> = ({ printings }) => {
