@@ -103,17 +103,14 @@ def build_graph(atomicCards, setList):
         g.add((ref, scatterer.subtype_name, Literal(t)))
     subtypes = URICounter('t', subtypes_init)
 
-    card_counter = 0
     side_counter = 0
-
 
     data = ((k,v) for k,v in ijson.kvitems(atomicCards, 'data') if all(map(isValid,v)))
 
     for name,sides in data:
         side0 = sides[0]
         #card = uri(side0.get('asciiName', name))
-        card_counter += 1
-        card = uri(f"c{card_counter}")
+        card = uri(side0['identifiers']['scryfallOracleId'])
         g.add((card, RDF.type, scatterer.Card))
         
         g.add((card, scatterer.alternative_deck_limit, Literal(side0.get('hasAlternativeDeckLimit', False))))
@@ -182,10 +179,10 @@ def build_graph(atomicCards, setList):
     data = ijson.items(setList, 'data.item')
 
     for s in data:
-        
         if s['code'] in sets:
             ref = uri(s['code'])
             g.add((ref, RDF.type, scatterer.Set))
+            g.add((ref, scatterer.set_code, Literal(s['code'])))
             g.add((ref, scatterer.set_name, Literal(s['name'])))
             g.add((ref, scatterer.set_date, date(s['releaseDate'])))
 

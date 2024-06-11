@@ -12,6 +12,18 @@
 #    Object Properties
 #################################################################
 
+###  http://rpcw.di.uminho.pt/2024/scatterer#hasDeckCard
+:hasDeckCard rdf:type owl:ObjectProperty ;
+             rdfs:domain :Deck ;
+             rdfs:range :DeckCard .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer#ofCard
+:ofCard rdf:type owl:ObjectProperty ;
+        rdfs:domain :DeckCard ;
+        rdfs:range :Card .
+
+
 ###  http://rpcw.di.uminho.pt/2024/scatterer/hasColor
 :hasColor rdf:type owl:ObjectProperty ;
           rdfs:domain :Side ;
@@ -93,6 +105,44 @@
 #################################################################
 #    Data properties
 #################################################################
+
+###  http://rpcw.di.uminho.pt/2024/scatterer#color_code
+:color_code rdf:type owl:DatatypeProperty ,
+                     owl:FunctionalProperty ;
+            rdfs:domain :Color ;
+            rdfs:range xsd:string .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer#deck_name
+:deck_name rdf:type owl:DatatypeProperty ;
+           rdfs:domain :Deck ;
+           rdfs:range xsd:string .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer#deck_uuid
+:deck_uuid rdf:type owl:DatatypeProperty ;
+           rdfs:domain :Deck ;
+           rdfs:range xsd:string .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer#deckcard_quantity
+:deckcard_quantity rdf:type owl:DatatypeProperty ;
+                   rdfs:domain :DeckCard ;
+                   rdfs:range xsd:int .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer#format_name
+:format_name rdf:type owl:DatatypeProperty ,
+                      owl:FunctionalProperty ;
+             rdfs:domain :Format ;
+             rdfs:range xsd:string .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer#set_code
+:set_code rdf:type owl:DatatypeProperty ;
+          rdfs:domain :Set ;
+          rdfs:range xsd:string .
+
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/alternative_deck_limit
 :alternative_deck_limit rdf:type owl:DatatypeProperty ,
@@ -176,9 +226,8 @@
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/power
-:power rdf:type owl:DatatypeProperty ,
-                owl:FunctionalProperty ;
-       rdfs:domain :Creature ;
+:power rdf:type owl:DatatypeProperty ;
+       rdfs:domain :Side ;
        rdfs:range xsd:string .
 
 
@@ -236,15 +285,22 @@
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/toughness
-:toughness rdf:type owl:DatatypeProperty ,
-                    owl:FunctionalProperty ;
-           rdfs:domain :Creature ;
+:toughness rdf:type owl:DatatypeProperty ;
+           rdfs:domain :Side ;
            rdfs:range xsd:string .
 
 
 #################################################################
 #    Classes
 #################################################################
+
+###  http://rpcw.di.uminho.pt/2024/scatterer#Deck
+:Deck rdf:type owl:Class .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer#DeckCard
+:DeckCard rdf:type owl:Class .
+
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Artifact
 :Artifact rdf:type owl:Class ;
@@ -374,6 +430,7 @@
 ###  http://rpcw.di.uminho.pt/2024/scatterer/B
 :B rdf:type owl:NamedIndividual ,
             :Color ;
+   :color_code "B" ;
    :color_name "Black" .
 
 
@@ -385,6 +442,7 @@
 ###  http://rpcw.di.uminho.pt/2024/scatterer/G
 :G rdf:type owl:NamedIndividual ,
             :Color ;
+   :color_code "G" ;
    :color_name "Green" .
 
 
@@ -406,6 +464,7 @@
 ###  http://rpcw.di.uminho.pt/2024/scatterer/R
 :R rdf:type owl:NamedIndividual ,
             :Color ;
+   :color_code "R" ;
    :color_name "Red" .
 
 
@@ -417,12 +476,14 @@
 ###  http://rpcw.di.uminho.pt/2024/scatterer/U
 :U rdf:type owl:NamedIndividual ,
             :Color ;
+   :color_code "U" ;
    :color_name "Blue" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/W
 :W rdf:type owl:NamedIndividual ,
             :Color ;
+   :color_code "W" ;
    :color_name "White" .
 
 
@@ -433,117 +494,140 @@
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/alchemy
 :alchemy rdf:type owl:NamedIndividual ,
-                  :Format .
+                  :Format ;
+         :format_name "alchemy" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/brawl
 :brawl rdf:type owl:NamedIndividual ,
-                :LeaderFormat .
+                :LeaderFormat ;
+       :format_name "brawl" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/commander
 :commander rdf:type owl:NamedIndividual ,
-                    :LeaderFormat .
+                    :LeaderFormat ;
+           :format_name "commander" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/duel
 :duel rdf:type owl:NamedIndividual ,
-               :Format .
+               :Format ;
+      :format_name "duel" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/explorer
 :explorer rdf:type owl:NamedIndividual ,
-                   :Format .
+                   :Format ;
+          :format_name "explorer" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/future
 :future rdf:type owl:NamedIndividual ,
-                 :Format .
+                 :Format ;
+        :format_name "future" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/gladiator
 :gladiator rdf:type owl:NamedIndividual ,
-                    :Format .
+                    :Format ;
+           :format_name "gladiator" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/historic
 :historic rdf:type owl:NamedIndividual ,
-                   :Format .
+                   :Format ;
+          :format_name "historic" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/historicbrawl
 :historicbrawl rdf:type owl:NamedIndividual ,
-                        :Format .
+                        :Format ;
+               :format_name "historicbrawl" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/legacy
 :legacy rdf:type owl:NamedIndividual ,
-                 :Format .
+                 :Format ;
+        :format_name "legacy" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/modern
 :modern rdf:type owl:NamedIndividual ,
-                 :Format .
+                 :Format ;
+        :format_name "modern" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/oathbreaker
 :oathbreaker rdf:type owl:NamedIndividual ,
-                      :LeaderFormat .
+                      :LeaderFormat ;
+             :format_name "oathbreaker" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/oldschool
 :oldschool rdf:type owl:NamedIndividual ,
-                    :Format .
+                    :Format ;
+           :format_name "oldschool" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/pauper
 :pauper rdf:type owl:NamedIndividual ,
-                 :Format .
+                 :Format ;
+        :format_name "pauper" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/paupercommander
 :paupercommander rdf:type owl:NamedIndividual ,
-                          :Format .
+                          :Format ;
+                 :format_name "paupercommander" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/penny
 :penny rdf:type owl:NamedIndividual ,
-                :Format .
+                :Format ;
+       :format_name "penny" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/pioneer
 :pioneer rdf:type owl:NamedIndividual ,
-                  :Format .
+                  :Format ;
+         :format_name "pioneer" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/predh
 :predh rdf:type owl:NamedIndividual ,
-                :Format .
+                :Format ;
+       :format_name "predh" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/premodern
 :premodern rdf:type owl:NamedIndividual ,
-                    :Format .
+                    :Format ;
+           :format_name "premodern" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/standard
 :standard rdf:type owl:NamedIndividual ,
-                   :Format .
+                   :Format ;
+          :format_name "standard" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/standardbrawl
 :standardbrawl rdf:type owl:NamedIndividual ,
-                        :Format .
+                        :Format ;
+               :format_name "standardbrawl" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/timeless
 :timeless rdf:type owl:NamedIndividual ,
-                   :Format .
+                   :Format ;
+          :format_name "timeless" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/vinatge
 :vinatge rdf:type owl:NamedIndividual ,
-                  :Format .
+                  :Format ;
+         :format_name "vintage" .
 
 
 #################################################################
