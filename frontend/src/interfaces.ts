@@ -73,13 +73,13 @@ export interface Filters {
   //loyalty
 }
 
+export interface Deck {
+  uuid: string;
+  name: string;
+  card_number: number;
+}
 
 export interface DeckCard {
   card: Card,
   quantity: number
-}
-
-export interface DeckDetails {
-  name: string;
-  cards: DeckCard[]
 }
