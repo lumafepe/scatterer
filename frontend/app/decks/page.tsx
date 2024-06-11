@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import {fetchDecks} from '@/api';
-import {Card, CardBody,Link} from "@nextui-org/react";
+import DeckComp from '@/components/Deck';
+import {Deck} from '@/interfaces';
 
 const CardPage: React.FC = () => {
-  const [cardData, setDecksData] = useState<string[] | null>(null);
+  const [cardData, setDecksData] = useState<Deck[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -30,13 +31,7 @@ const CardPage: React.FC = () => {
         {cardData ?
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {cardData.map((item, _) => (
-              <Card className="p-4 border rounded-lg shadow-md flex justify-center">
-                <Link color="foreground" href={`/decks/${item}`}>
-                  <CardBody>
-                    <p className='text-center'>{item}</p>
-                  </CardBody>
-                </Link>
-              </Card>
+              <DeckComp deck={item} />
           ))}
         </div>
         : <p>No decks found</p>}

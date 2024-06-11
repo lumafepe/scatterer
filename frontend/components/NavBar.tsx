@@ -10,7 +10,7 @@ import Cookies from 'js-cookie';
 
 import { useEffect, useState } from 'react';
 
-function getDeckCookie(): string {
+function getDeckCookie(): string | undefined {
     return Cookies.get('deck');
 }
 
