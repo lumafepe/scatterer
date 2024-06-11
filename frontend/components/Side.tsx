@@ -1,5 +1,5 @@
 import React from 'react';
-import { Side } from '../interfaces';
+import { Side } from '@/interfaces';
 
 interface SideDetailsProps {
   key: string;

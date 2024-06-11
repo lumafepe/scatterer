@@ -1,126 +1,148 @@
-{"cartas":[{
-    "alternativeDeckLimit": false,
-    "name": "Bace a Batata",
-    "scryfallUUID": "56ebc372-aabd-4174-a943-c7bf59e5028d",
-    
-    
-    "asciiName": "Bace a Batata",
-  
-  
-    "colorIdentities": [ "R", "G", "B", "U", "W" ], 
-    "printings": [
-      {
-        "name": "Brother's War",
-        "date": "2023-10-04"
+{
+  "decks": [
+    "deck1",
+    "deck2",
+    "deck3",
+    "deck4"
+  ],
+  "cartas": [
+    {
+      "alternativeDeckLimit": false,
+      "name": "Bace a Batata",
+      "scryfallUUID": "56ebc372-aabd-4174-a943-c7bf59e5028d",
+      "asciiName": "Bace a Batata",
+      "colorIdentities": [
+        "R",
+        "G",
+        "B",
+        "U",
+        "W"
+      ],
+      "printings": [
+        {
+          "name": "Brother's War",
+          "date": "2023-10-04"
+        },
+        {
+          "name": "March of the Machines",
+          "date": "2024-3-04"
+        }
+      ],
+      "rulings": [
+        {
+          "date": "2004-10-04",
+          "text": "Abeyance does not affect abilities which are not activated, such as static abilities and triggered abilities. It also doesn't stop the declaration of attackers or blockers."
+        },
+        {
+          "date": "2004-10-04",
+          "text": "Abeyance never prevents mana abilities from being activated."
+        },
+        {
+          "date": "2004-10-04",
+          "text": "Abeyance prohibits activated abilities of cards which are not on the battlefield."
+        },
+        {
+          "date": "2008-08-01",
+          "text": "This can't be used as a counterspell. It will have no effect on spells which were on the stack when it was cast, nor on those cast in response to it."
+        }
+      ],
+      "sides": {
+        "a": {
+          "manaValue": 4,
+          "text": "O Bace é um gajo bue fixe. Viva o Bace",
+          "faceManaValue": 4,
+          "faceName": "Bace a Batata",
+          "defense": "X",
+          "hand": "X",
+          "life": "X",
+          "loyalty": "X",
+          "power": "X",
+          "toughness": "X",
+          "colors": [
+            "R",
+            "G",
+            "B",
+            "U",
+            "W"
+          ],
+          "colorIndicators": [
+            "R",
+            "G",
+            "B",
+            "U",
+            "W"
+          ],
+          "keywords": [
+            "First strike",
+            "Haste",
+            "Protection",
+            "Trample"
+          ],
+          "types": [
+            "Artifact",
+            "Creature"
+          ],
+          "subtypes": [
+            "Human",
+            "Warrior"
+          ],
+          "supertypes": [
+            "Legendary"
+          ]
+        },
+        "c": {
+          "manaValue": 4,
+          "text": "O Bace é um gajo bue fixe. Viva o Bace",
+          "faceManaValue": 4,
+          "faceName": "Bace a Batata",
+          "defense": "X",
+          "hand": "X",
+          "life": "X",
+          "loyalty": "X",
+          "power": "X",
+          "toughness": "X",
+          "colors": [
+            "R",
+            "G",
+            "B",
+            "U",
+            "W"
+          ],
+          "colorIndicators": [
+            "R",
+            "G",
+            "B",
+            "U",
+            "W"
+          ],
+          "keywords": [
+            "First strike",
+            "Haste",
+            "Protection",
+            "Trample"
+          ],
+          "types": [
+            "Artifact",
+            "Creature"
+          ],
+          "subtypes": [
+            "Human",
+            "Warrior"
+          ],
+          "supertypes": [
+            "Legendary"
+          ]
+        }
       },
-      {
-        "name": "March of the Machines",
-        "date": "2024-3-04"
-      }
-    ],
-    "rulings": [
-      {
-        "date": "2004-10-04",
-        "text": "Abeyance does not affect abilities which are not activated, such as static abilities and triggered abilities. It also doesn't stop the declaration of attackers or blockers."
+      "legalities": {
+        "alchemy": "Legal",
+        "commander": "Restricted",
+        "oathbreaker": "Banned"
       },
-      {
-        "date": "2004-10-04",
-        "text": "Abeyance never prevents mana abilities from being activated."
-      },
-      {
-        "date": "2004-10-04",
-        "text": "Abeyance prohibits activated abilities of cards which are not on the battlefield."
-      },
-      {
-        "date": "2008-08-01",
-        "text": "This can't be used as a counterspell. It will have no effect on spells which were on the stack when it was cast, nor on those cast in response to it."
-      }
-    ],
-    "sides": {
-      "a": {
-        "manaValue": 4,
-        "text": "O Bace é um gajo bue fixe. Viva o Bace",
-        
-        
-        "faceManaValue": 4,
-        "faceName": "Bace a Batata",
-        
-  
-        
-        "defense": "X",   
-        "hand": "X",      
-        "life": "X",      
-        "loyalty": "X",   
-        "power": "X",     
-        "toughness": "X", 
-  
-  
-        "colors": [ "R", "G", "B", "U", "W" ],
-        "colorIndicators": [ "R", "G", "B", "U", "W" ],
-        "keywords": [ 
-          "First strike",
-          "Haste",
-          "Protection",
-          "Trample"
-        ],
-        "types": [    
-          "Artifact",
-          "Creature"
-        ],
-        "subtypes": [ 
-          "Human",
-          "Warrior"
-        ],
-        "supertypes": [ 
-          "Legendary"
-        ]
-      },
-      "c": {
-        "manaValue": 4,
-        "text": "O Bace é um gajo bue fixe. Viva o Bace",
-        
-        
-        "faceManaValue": 4,
-        "faceName": "Bace a Batata",
-        
-  
-        
-        "defense": "X",   
-        "hand": "X",      
-        "life": "X",      
-        "loyalty": "X",   
-        "power": "X",     
-        "toughness": "X", 
-  
-  
-        "colors": [ "R", "G", "B", "U", "W" ],
-        "colorIndicators": [ "R", "G", "B", "U", "W" ],
-        "keywords": [ 
-          "First strike",
-          "Haste",
-          "Protection",
-          "Trample"
-        ],
-        "types": [    
-          "Artifact",
-          "Creature"
-        ],
-        "subtypes": [ 
-          "Human",
-          "Warrior"
-        ],
-        "supertypes": [ 
-          "Legendary"
-        ]
-      }
-    },
-    "legalities": { 
-      "alchemy": "Legal",
-      "commander": "Restricted",
-      "oathbreaker": "Banned"
-    },
-    "isValidLeaderIn": [  
-      "commander",
-      "oathbreaker"
-    ]
-  }]}
+      "isValidLeaderIn": [
+        "commander",
+        "oathbreaker"
+      ]
+    }
+  ]
+}

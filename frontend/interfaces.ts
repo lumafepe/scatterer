@@ -29,13 +29,13 @@ export interface Side {
   supertypes: string[];
 }
 
-export interface Card {
+export interface MagicCard {
   name: string;
   scryfallUUID: string;
   asciiName?: string;
 }
 
-export interface CardDetails extends Card {
+export interface MagicCardDetails extends MagicCard {
   alternativeDeckLimit: boolean;
   colorIdentities: string[];
   printings: Set[];
@@ -80,6 +80,6 @@ export interface Deck {
 }
 
 export interface DeckCard {
-  card: Card,
+  card: MagicCard,
   quantity: number
 }
