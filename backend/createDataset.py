@@ -186,6 +186,40 @@ def build_graph(atomicCards, setList):
             g.add((ref, scatterer.set_name, Literal(s['name'])))
             g.add((ref, scatterer.set_date, date(s['releaseDate'])))
 
+
+    #TODO: remove in prod. for testing purposes only
+    uuid = "c1d3a99e-4c75-4fac-ba17-633716d98d88"
+    ref = uri(uuid)
+    g.add((ref, RDF.type, scatterer.Deck))
+    g.add((ref, scatterer.deck_uuid, Literal(uuid)))
+    g.add((ref, scatterer.deck_name, Literal("Deck Fixe")))
+    g.add((ref, scatterer.hasDeckCard, uri("dc1")))
+    g.add((uri("dc1"), RDF.type, scatterer.DeckCard))
+    g.add((uri("dc1"), scatterer.deckcard_quantity, Literal(3)))
+    g.add((uri("dc1"), scatterer.ofCard, uri("0004ebd0-dfd6-4276-b4a6-de0003e94237")))
+    g.add((ref, scatterer.hasDeckCard, uri("dc2")))
+    g.add((uri("dc2"), RDF.type, scatterer.DeckCard))
+    g.add((uri("dc2"), scatterer.deckcard_quantity, Literal(4)))
+    g.add((uri("dc2"), scatterer.ofCard, uri("0006faf6-7a61-426c-9034-579f2cfcfa83")))
+
+    uuid = "adb8e0ee-a2aa-4cbb-8fe4-bfa46cd41fdf"
+    ref = uri(uuid)
+    g.add((ref, RDF.type, scatterer.Deck))
+    g.add((ref, scatterer.deck_uuid, Literal(uuid)))
+    g.add((ref, scatterer.deck_name, Literal("Deck Muito Fixe")))
+    g.add((ref, scatterer.hasDeckCard, uri("dc3")))
+    g.add((uri("dc3"), RDF.type, scatterer.DeckCard))
+    g.add((uri("dc3"), scatterer.deckcard_quantity, Literal(3)))
+    g.add((uri("dc3"), scatterer.ofCard, uri("0007c283-5b7a-4c00-9ca1-b455c8dff8c3")))
+    g.add((ref, scatterer.hasDeckCard, uri("dc4")))
+    g.add((uri("dc4"), RDF.type, scatterer.DeckCard))
+    g.add((uri("dc4"), scatterer.deckcard_quantity, Literal(4)))
+    g.add((uri("dc4"), scatterer.ofCard, uri("000d5588-5a4c-434e-988d-396632ade42c")))
+    g.add((ref, scatterer.hasDeckCard, uri("dc5")))
+    g.add((uri("dc5"), RDF.type, scatterer.DeckCard))
+    g.add((uri("dc5"), scatterer.deckcard_quantity, Literal(3)))
+    g.add((uri("dc5"), scatterer.ofCard, uri("000d8291-d6a8-436e-9e17-7531333686a8")))
+    
     return g
 
 

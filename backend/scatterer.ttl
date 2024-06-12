@@ -12,18 +12,6 @@
 #    Object Properties
 #################################################################
 
-###  http://rpcw.di.uminho.pt/2024/scatterer#hasDeckCard
-:hasDeckCard rdf:type owl:ObjectProperty ;
-             rdfs:domain :Deck ;
-             rdfs:range :DeckCard .
-
-
-###  http://rpcw.di.uminho.pt/2024/scatterer#ofCard
-:ofCard rdf:type owl:ObjectProperty ;
-        rdfs:domain :DeckCard ;
-        rdfs:range :Card .
-
-
 ###  http://rpcw.di.uminho.pt/2024/scatterer/hasColor
 :hasColor rdf:type owl:ObjectProperty ;
           rdfs:domain :Side ;
@@ -40,6 +28,12 @@
 :hasColorIndicator rdf:type owl:ObjectProperty ;
                    rdfs:domain :Side ;
                    rdfs:range :Color .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/hasDeckCard
+:hasDeckCard rdf:type owl:ObjectProperty ;
+             rdfs:domain :Deck ;
+             rdfs:range :DeckCard .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/hasKeyword
@@ -102,46 +96,21 @@
                  rdfs:range :LeaderFormat .
 
 
+###  http://rpcw.di.uminho.pt/2024/scatterer/ofCard
+:ofCard rdf:type owl:ObjectProperty ;
+        rdfs:domain :DeckCard ;
+        rdfs:range :Card .
+
+
 #################################################################
 #    Data properties
 #################################################################
 
-###  http://rpcw.di.uminho.pt/2024/scatterer#color_code
-:color_code rdf:type owl:DatatypeProperty ,
-                     owl:FunctionalProperty ;
-            rdfs:domain :Color ;
-            rdfs:range xsd:string .
-
-
-###  http://rpcw.di.uminho.pt/2024/scatterer#deck_name
-:deck_name rdf:type owl:DatatypeProperty ;
-           rdfs:domain :Deck ;
-           rdfs:range xsd:string .
-
-
-###  http://rpcw.di.uminho.pt/2024/scatterer#deck_uuid
-:deck_uuid rdf:type owl:DatatypeProperty ;
-           rdfs:domain :Deck ;
-           rdfs:range xsd:string .
-
-
-###  http://rpcw.di.uminho.pt/2024/scatterer#deckcard_quantity
-:deckcard_quantity rdf:type owl:DatatypeProperty ;
-                   rdfs:domain :DeckCard ;
-                   rdfs:range xsd:int .
-
-
-###  http://rpcw.di.uminho.pt/2024/scatterer#format_name
-:format_name rdf:type owl:DatatypeProperty ,
-                      owl:FunctionalProperty ;
-             rdfs:domain :Format ;
-             rdfs:range xsd:string .
-
-
-###  http://rpcw.di.uminho.pt/2024/scatterer#set_code
-:set_code rdf:type owl:DatatypeProperty ;
-          rdfs:domain :Set ;
-          rdfs:range xsd:string .
+###  http://rpcw.di.uminho.pt/2024/scatterer#supertype_name
+:supertype_name rdf:type owl:DatatypeProperty ,
+                         owl:FunctionalProperty ;
+                rdfs:domain :Supertype ;
+                rdfs:range xsd:string .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/alternative_deck_limit
@@ -157,11 +126,36 @@
             rdfs:range xsd:string .
 
 
+###  http://rpcw.di.uminho.pt/2024/scatterer/color_code
+:color_code rdf:type owl:DatatypeProperty ,
+                     owl:FunctionalProperty ;
+            rdfs:domain :Color ;
+            rdfs:range xsd:string .
+
+
 ###  http://rpcw.di.uminho.pt/2024/scatterer/color_name
 :color_name rdf:type owl:DatatypeProperty ,
                      owl:FunctionalProperty ;
             rdfs:domain :Color ;
             rdfs:range xsd:string .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/deck_name
+:deck_name rdf:type owl:DatatypeProperty ;
+           rdfs:domain :Deck ;
+           rdfs:range xsd:string .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/deck_uuid
+:deck_uuid rdf:type owl:DatatypeProperty ;
+           rdfs:domain :Deck ;
+           rdfs:range xsd:string .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/deckcard_quantity
+:deckcard_quantity rdf:type owl:DatatypeProperty ;
+                   rdfs:domain :DeckCard ;
+                   rdfs:range xsd:int .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/defense
@@ -181,6 +175,13 @@
 :face_name rdf:type owl:DatatypeProperty ;
            rdfs:domain :Side ;
            rdfs:range xsd:string .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/format_name
+:format_name rdf:type owl:DatatypeProperty ,
+                      owl:FunctionalProperty ;
+             rdfs:domain :Format ;
+             rdfs:range xsd:string .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/hand
@@ -252,6 +253,12 @@
                rdfs:range xsd:string .
 
 
+###  http://rpcw.di.uminho.pt/2024/scatterer/set_code
+:set_code rdf:type owl:DatatypeProperty ;
+          rdfs:domain :Set ;
+          rdfs:range xsd:string .
+
+
 ###  http://rpcw.di.uminho.pt/2024/scatterer/set_date
 :set_date rdf:type owl:DatatypeProperty ;
           rdfs:domain :Set ;
@@ -294,14 +301,6 @@
 #    Classes
 #################################################################
 
-###  http://rpcw.di.uminho.pt/2024/scatterer#Deck
-:Deck rdf:type owl:Class .
-
-
-###  http://rpcw.di.uminho.pt/2024/scatterer#DeckCard
-:DeckCard rdf:type owl:Class .
-
-
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Artifact
 :Artifact rdf:type owl:Class ;
           rdfs:subClassOf :Side .
@@ -328,6 +327,14 @@
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Creature
 :Creature rdf:type owl:Class ;
           rdfs:subClassOf :Side .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Deck
+:Deck rdf:type owl:Class .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/DeckCard
+:DeckCard rdf:type owl:Class .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Dungeon
@@ -436,7 +443,8 @@
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Basic
 :Basic rdf:type owl:NamedIndividual ,
-                :Supertype .
+                :Supertype ;
+       :supertype_name "Basic" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/G
@@ -448,17 +456,20 @@
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Host
 :Host rdf:type owl:NamedIndividual ,
-               :Supertype .
+               :Supertype ;
+      :supertype_name "Host" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Legendary
 :Legendary rdf:type owl:NamedIndividual ,
-                    :Supertype .
+                    :Supertype ;
+           :supertype_name "Legendary" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Ongoing
 :Ongoing rdf:type owl:NamedIndividual ,
-                  :Supertype .
+                  :Supertype ;
+         :supertype_name "Ongoing" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/R
@@ -470,7 +481,8 @@
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Snow
 :Snow rdf:type owl:NamedIndividual ,
-               :Supertype .
+               :Supertype ;
+      :supertype_name "Snow" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/U
@@ -489,7 +501,8 @@
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/World
 :World rdf:type owl:NamedIndividual ,
-                :Supertype .
+                :Supertype ;
+       :supertype_name "World" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/alchemy

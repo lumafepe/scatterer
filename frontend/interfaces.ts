@@ -53,24 +53,29 @@ export enum Inclusivity {
   Exactly
 }
 
-export interface Range {
-  min: number,
-  max: number
+export enum Legality {
+  Legal,
+  Restricted,
+  Banned
 }
 
 export interface Filters {
   name?: string;
 
-  //colors
-  colorsInclusivity?: Inclusivity,
+  colors: string; //list of chars: 'BGRUW'
+  colorInclusivity?: Inclusivity;
 
   types: string[];
-  typesInclusivity?: Inclusivity,
-  manaValue?: Range
 
-  //power
-  //toughness
-  //loyalty
+  manaValueMin?: number;
+  manaValueMax?: number;
+  keywords: string[];
+
+  sets: string[];
+
+  formats: { [format: string]: Legality }
+
+  leaderIn: string[];
 }
 
 export interface Deck {
@@ -80,6 +85,6 @@ export interface Deck {
 }
 
 export interface DeckCard {
-  card: MagicCard,
-  quantity: number
+  card: MagicCard;
+  quantity: number;
 }
