@@ -1,6 +1,6 @@
 "use client";
 
-import { MagicCard, MagicCardDetails, Filters, DeckCard } from '@/interfaces'
+import { MagicCard, MagicCardDetails, Filters, DeckCard,Deck } from '@/interfaces'
 
 export async function fetchCard(id:string): Promise<MagicCardDetails> {
     const res = await fetch(`http://localhost:8000/cartas?scryfallUUID=${id}`);
@@ -32,12 +32,16 @@ export async function fetchCard(id:string): Promise<MagicCardDetails> {
     //TODO: legalities, sides
 }
 
-const limit = 50
-export async function fetchCards(page: number, filter: Filters): Promise<MagicCard[]> {
+const limit = 30
+export async function fetchCards(page: number, filter: Filters|null): Promise<MagicCard[]> {
     const offset = limit * page
+    const res = await fetch(`http://localhost:8000/cards?_page=${page}&_per_page=${limit}`);
+    const result = await res.json();
+    return result;
+
 }
 
-export async function fetchDecks(): Promise<string[]> {
+export async function fetchDecks(): Promise<Deck[]> {
     const res = await fetch(`http://localhost:8000/decks`);
     const result = await res.json();
     return result;
@@ -52,6 +56,10 @@ export async function fetchDecks(): Promise<string[]> {
 
 
 export async function fetchDeckCards(uuid: string): Promise<DeckCard[]> {
+    const res = await fetch(`http://localhost:8000/decksCards/`);
+    const result = await res.json();
+    return result[uuid];
+
     const query = `
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
     select ?name ?asciiName ?scryfallUUID ?quantity where {
