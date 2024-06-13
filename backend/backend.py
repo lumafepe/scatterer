@@ -1,4 +1,4 @@
-from flask import Flask,request
+from flask import Flask,request,make_response,jsonify
 from unidecode import unidecode
 import requests
 import json
@@ -7,14 +7,29 @@ import uuid
 app = Flask(__name__)
 sparql_url = "http://localhost:7200/repositories/scatterer"
 
+
+
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
+def _corsify_actual_response(response):
+    aux = jsonify(response)
+    aux.headers.add("Access-Control-Allow-Origin", "*")
+    return aux
+
+
 def get_value(v: dict):
     if v['type'] == 'literal':
         return v['value']
     elif v['type'] == 'uri':
         return v['value'].split('#')[-1]
     
-def get_values(v: dict, *keys:list[str]):
-    return {k: get_value(v[k]) for k in keys if k in v}
+def get_values(v: dict, **keys:dict[str,callable]):
+    return {k: t(get_value(v[k])) for k,t in keys.items() if k in v}
 
 def run_query(query):
     result = None
@@ -31,8 +46,11 @@ def run_query(query):
     return (result, error)
 
 
-@app.route('/cards/<string:uuid>', methods = [ 'GET' ])
+@app.route('/cards/<string:uuid>', methods = [ 'GET','OPTIONS' ])
 def card(uuid):
+    if request.method == 'OPTONIS':
+        return _build_cors_preflight_response()
+
     query = f"""
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
     select ?name ?alternativeDeckLimit ?asciiName (group_concat(distinct ?cic;separator="") as ?colorIdentities) (group_concat(distinct ?lfn) as ?isValidLeaderIn) where {{
@@ -54,7 +72,7 @@ def card(uuid):
 
     sides_query = """"""
     
-    return {}
+    return _corsify_actual_response({})
 
 
 newline = '\n'
@@ -71,14 +89,17 @@ def get_card_type(t):
             return ct
         
 def splitArgs(s):
-    if s == None:
+    if s == None or s == '':
         return []
     return s.split(' ')
 
-@app.route('/cards', methods = [ 'GET' ])
+@app.route('/cards', methods = [ 'GET', 'OPTIONS' ])
 def cards():
-    page = request.args.get('page', 1)
-    limit=51
+    if request.method == 'OPTONIS':
+        return _build_cors_preflight_response()
+
+    page = int(request.args.get('page', 1))
+    limit = 30
     offset = (page - 1) * limit
 
     name = request.args.get('name') #TODO: separate words? remove symbols? something else??
@@ -145,12 +166,15 @@ def cards():
     }} limit {limit} offset {offset}"""
 
     res, err = run_query(query)
-    return [get_values(d, "name", "asciiName", "scryfallUUID") for d in res["results"]]
+    return _corsify_actual_response([get_values(d, name=str, asciiName=str, scryfallUUID=str) for d in res["results"]])
 
 
 #TODO: DELETE?
-@app.route('/decks/new', methods = ['POST'])
+@app.route('/decks/new', methods = ['POST', 'OPTIONS'])
 def new_deck():
+    if request.method == 'OPTONIS':
+        return _build_cors_preflight_response()
+
     name = request.form.get('name')
     uuid = str(uuid.uuid4())
 
@@ -161,11 +185,13 @@ def new_deck():
     }}"""
 
     _,err = run_query(query)
-    return {"uuid": uuid, "name": name, "card_number": 0}
+    return _corsify_actual_response({"uuid": uuid, "name": name, "card_number": 0})
 
-@app.route('/decks/<string:uuid>', methods = ['GET', 'PATCH'])
+@app.route('/decks/<string:uuid>', methods = ['GET', 'PATCH', 'OPTIONS'])
 def deck(uuid):
-    if request.method == 'GET':
+    if request.method == 'OPTONIS':
+        return _build_cors_preflight_response()
+    elif request.method == 'GET':
         query = f"""
         PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
         select ?name ?asciiName ?scryfallUUID ?quantity where {{
@@ -176,7 +202,9 @@ def deck(uuid):
         }}"""
         
         res,err = run_query(query)
-        return [get_values(dc, "name", "asciiName", "scryfallUUID", "quantity") for dc in res["results"]]
+        return _corsify_actual_response(
+            [get_values(dc, name=str, asciiName=str, scryfallUUID=str, quantity=str) for dc in res["results"]]
+        )
     elif request.method == 'PATCH':
         cardUUID = request.form.get('card')
         quantity = request.form.get('quantity')
@@ -206,8 +234,11 @@ def deck(uuid):
 
         _,err = run_query(update)
 
-@app.route('/decks', methods = [ 'GET' ])
+@app.route('/decks', methods = [ 'GET', 'OPTIONS' ])
 def decks():
+    if request.method == 'OPTONIS':
+        return _build_cors_preflight_response()
+
     query = """
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
     select ?uuid ?name (sum (?number) as ?card_number) where {
@@ -216,8 +247,10 @@ def decks():
     } group by ?uuid ?name"""
 
     res,err = run_query(query)
-    return [get_values(d, "uuid", "name", "card_number") for d in res["results"]]
+    return _corsify_actual_response(
+        [get_values(d, uuid=str, name=str, card_number=int) for d in res["results"]]
+    )
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=True)

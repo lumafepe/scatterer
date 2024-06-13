@@ -1,6 +1,6 @@
 "use client";
 
-import { MagicCard, MagicCardDetails, Filters, Deck, DeckCard, Legality } from '@/interfaces'
+import { MagicCard, MagicCardDetails, Filters, Deck, DeckCard, Legality, emptyFilter } from '@/interfaces'
 import axios from 'axios';
 
 const API = axios.create({
@@ -17,8 +17,8 @@ export async function fetchCard(id:string): Promise<MagicCardDetails> {
 }
 
 
-export async function fetchCards(page: number, filter: Filters): Promise<MagicCard[]> {
-    const response = await API.get('/cards', null, { params: {
+export async function fetchCards(page: number = 1, filter: Filters = emptyFilter()): Promise<MagicCard[]> {
+    const response = await API.get('/cards', { params: {
         page: page,
         name: filter.name,
         colors: filter.colors,

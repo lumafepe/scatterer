@@ -78,6 +78,17 @@ export interface Filters {
   leaderIn: string[];
 }
 
+export function emptyFilter(): Filters {
+  return {
+    colors: '',
+    types: [],
+    keywords: [],
+    sets: [],
+    formats: {},
+    leaderIn: []
+  };
+}
+
 export interface Deck {
   uuid: string;
   name: string;
