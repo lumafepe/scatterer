@@ -5,7 +5,8 @@ import { GiCardPlay } from "react-icons/gi";
 import {Card, CardBody,Link,Image} from "@nextui-org/react";
 
 interface CardCompProps {
-  card : MagicCard,
+  name: string
+  scryfallUUID:string
   quantity?: number
 }
 interface Names{
@@ -27,22 +28,27 @@ const Name:React.FC<Names> = ({name,asciiName})=>{
 }
 
 
-const CardComp: React.FC<CardCompProps> = ( {card,quantity} ) => {
-  let imageSrc = "https://api.scryfall.com/cards/"+card.scryfallUUID+"?format=image";
+const CardComp: React.FC<CardCompProps> = ( {name,scryfallUUID,quantity} ) => {
+  let imageSrc = "https://api.scryfall.com/cards/"+scryfallUUID+"?format=image";
+  console.log(quantity);
+  if (quantity === undefined){
+    return (
+      <Card className="p-4 border rounded-lg shadow-md flex justify-center">
+          <Link color="foreground" href={`/card/${scryfallUUID}`}>
+            <CardBody className='flex justify-center'>
+              <Image alt={name} className="object-cover" height={300} shadow="md" src={imageSrc} width="100%"/>
+            </CardBody>
+          </Link>
+      </Card>
+    );
+  }
   return (
     <Card className="p-4 border rounded-lg shadow-md flex justify-center">
-        <Link color="foreground" href={`/card/${card.scryfallUUID}`}>
+        <Link color="foreground" href={`/card/${scryfallUUID}`}>
           <CardBody className='flex justify-center'>
             <div>
-              <Image alt={card.name} className="object-cover" height={300} shadow="md" src={imageSrc} width="100%"/>
-              {(quantity != null) ?
-              <div className='flex justify-between'>
-                <Name name={card.name} asciiName={card.asciiName}/>
-                <div className='flex'><GiCardPlay />{quantity}</div>
-              </div>                
-              :
-              <Name name={card.name} asciiName={card.asciiName}/>
-              }
+              <Image alt={name} className="object-cover" height={300} shadow="md" src={imageSrc} width="100%"/>
+              <div className='flex'><GiCardPlay />{quantity}</div>               
             </div>
           </CardBody>
         </Link>

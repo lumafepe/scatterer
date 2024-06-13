@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react';
 import {fetchCards} from '@/api';
 import CardComp from '@/components/CardComp';
-import {MagicCard} from '@/interfaces';
+import SearchBar from '@/components/SearchBar'
+import {MagicCard,Filters} from '@/interfaces';
 import {Pagination} from "@nextui-org/react";
 
 
@@ -29,15 +30,18 @@ const CardPage: React.FC = () => {
     ); 
   }
   return (
-      <div className="container mx-auto p-4">
-        {cards ?
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {cards.map((item, _) => (
-              <CardComp card={item} />
-          ))}
+    <div>
+      <SearchBar callback={(filter:Filters)=>{console.log(filter)}}/>
+        <div className="container mx-auto p-4">
+          {cards ?
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {cards.map((item, _) => (
+                <CardComp card={item} />
+            ))}
+          </div>
+          : <p>No cards found</p>}
+          <Pagination className="flex justify-end" loop showControls color="warning" total={1000} initialPage={1} page={currentPage} onChange={setCurrentPage} />
         </div>
-        : <p>No cards found</p>}
-        <Pagination className="flex justify-end" loop showControls color="warning" total={1000} initialPage={1} page={currentPage} onChange={setCurrentPage} />
       </div>
   );
 };

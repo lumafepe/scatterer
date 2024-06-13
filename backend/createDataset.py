@@ -2,9 +2,11 @@ from rdflib import Graph, URIRef, Literal, Namespace
 from rdflib.namespace import RDF, XSD
 import urllib.request
 import tempfile
+import requests
 import ijson
 import gzip
 import os
+import json
 
 #CONSTANTS
 scatterer = Namespace("http://rpcw.di.uminho.pt/2024/scatterer/")
@@ -80,7 +82,19 @@ def download_file(url, cache_path, decompress=False):
 
     return open(cache_path, 'rb')
 
-def build_graph(atomicCards, setList):
+def get_uuidConversions():
+    for file in requests.get('https://api.scryfall.com/bulk-data').json()['data']:
+        if file['type']=='oracle_cards':
+            download_link = file['download_uri']
+            uuids = download_file(download_link,'data/uuids.json',decompress=False)
+            data = {x['oracle_id']:x['id'] for x in json.load(uuids)}
+            uuids.close()
+            return data
+        else:
+            continue
+
+
+def build_graph(atomicCards, setList, uuids):
     g = Graph()
     g.parse('scatterer.ttl')
 
@@ -115,7 +129,7 @@ def build_graph(atomicCards, setList):
         
         g.add((card, scatterer.alternative_deck_limit, Literal(side0.get('hasAlternativeDeckLimit', False))))
         maybeAdd(g, card, scatterer.ascii_name, side0.get('asciiName'))
-        g.add((card, scatterer.scryfall_uuid, Literal(side0['identifiers']['scryfallOracleId'])))
+        g.add((card, scatterer.scryfall_uuid, Literal(uuids[side0['identifiers']['scryfallOracleId']])))
         g.add((card, scatterer.name, Literal(name)))
         for c in side0['colorIdentity']:
             g.add((card, scatterer.hasColorIdentity, uri(c)))
@@ -224,6 +238,8 @@ def build_graph(atomicCards, setList):
 
 
 def main():
+    print("Downloading UUIDs ...")
+    uuids = get_uuidConversions()
     print('Downloading cards dataset...')
     atomicCards = download_file('https://mtgjson.com/api/v5/AtomicCards.json.gz', 'data/atomicCards.json', True)
 
@@ -231,7 +247,7 @@ def main():
     setList = download_file('https://mtgjson.com/api/v5/SetList.json', 'data/sets.json')
 
     print('Parsing datasets...')
-    g = build_graph(atomicCards, setList)
+    g = build_graph(atomicCards, setList, uuids)
 
     atomicCards.close()
     setList.close()
