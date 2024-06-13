@@ -31,7 +31,7 @@ const CardComp: React.FC<CardCompProps> = ( {card,quantity} ) => {
   let imageSrc = "https://api.scryfall.com/cards/"+card.scryfallUUID+"?format=image";
   return (
     <Card className="p-4 border rounded-lg shadow-md flex justify-center">
-        <Link color="foreground" href={`/cards/${card.scryfallUUID}`}>
+        <Link color="foreground" href={`/card/${card.scryfallUUID}`}>
           <CardBody className='flex justify-center'>
             <div>
               <Image alt={card.name} className="object-cover" height={300} shadow="md" src={imageSrc} width="100%"/>

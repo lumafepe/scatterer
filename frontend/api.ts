@@ -64,3 +64,6 @@ export async function updateDeckCard(uuid: string, cardUUID: string, quantity: n
         quantity: quantity
     });
 }
+
+//TODO
+export async function addToDeck(Deckuuid: string,CardUUid:String){}

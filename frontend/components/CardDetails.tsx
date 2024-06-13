@@ -1,25 +1,46 @@
 import React from 'react';
-import { MagicCard } from '@/interfaces';
+import { MagicCardDetails } from '@/interfaces';
 import Printings from './Printings';
 import Rullings from './Rulings';
 import LeaderIn from './LeaderIn';
 import Legalities from './Legalities';
 import Side from './Side';
 import {Card, CardBody, Image, Button,Divider,Spacer} from "@nextui-org/react";
+import {addToDeck} from '@/api'
+import Cookies from 'js-cookie';
+import { useEffect, useState } from 'react';
 
 interface CardDetailsProps {
-  card: MagicCard;
+  card: MagicCardDetails;
 }
 
 function CharToSymbol(symbol:string) {
   return <Image src={"/icons/"+symbol.toLowerCase()+".svg"} alt="/no-image.svg" width={20} height={20} className="mr-2" />
 }
 
-
+function getDeckCookie(): string | undefined {
+  return Cookies.get('deck');
+}
 
 
 const CardDetails: React.FC<CardDetailsProps> = ({ card }) => {
+  const [adding, setAdding] = useState<boolean>(false);
+  
   let imageSrc = "https://api.scryfall.com/cards/"+card.scryfallUUID+"?format=image";
+
+  useEffect(() => {
+    async function addCardToDeck(){
+      const deck = getDeckCookie();
+      if (deck === undefined) alert("Please select a deck first");
+      else{
+        await addToDeck(deck,card.scryfallUUID);
+      }
+    }
+    if (adding===true){
+      addCardToDeck();
+      setAdding(false);
+    }
+  }, [adding]);
   return (
     <div className="max-w-full max-h-full mx-auto p-4">
       <Card isBlurred className="border-none bg-background/60 dark:bg-default-100/50" shadow="sm">
@@ -48,7 +69,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ card }) => {
                   <Printings printings={card.printings} />
                 </div>
                 <div className="flex flex-col gap-0">
-                  <Button data-hover="Refresh decks" className='bg-orange-700'>Add to Deck</Button>
+                  <Button disabled={adding} data-hover="Add to deck" className='bg-orange-700' onPressEnd={()=>setAdding(true)} >Add to Deck</Button>
                 </div>
               </div>
             </div>

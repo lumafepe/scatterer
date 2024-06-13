@@ -5,6 +5,7 @@ import {Select, SelectItem} from "@nextui-org/react";
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link,Button} from "@nextui-org/react";
 import { AiOutlineRedo } from "react-icons/ai";
 import {fetchDecks} from "@/api";
+import { Deck } from '@/interfaces';
 
 import Cookies from 'js-cookie';
 
@@ -30,8 +31,9 @@ function NavBar() {
         const res = await fetchDecks();
         setDecksData(res);
       }
-      fetchDeckData();
-    }, []);
+      if (DecksData.length==0)
+        fetchDeckData();
+    }, [DecksData]);
     return (
         <Navbar isBordered>
             <NavbarBrand>
@@ -51,14 +53,14 @@ function NavBar() {
               <NavbarItem>
                 <Select selectedKeys={(currDeck === undefined)?[]:[currDeck]} isLoading={(DecksData.length === 0)} label="Select Deck" className="w-32" onChange={setDeckCookie}>
                     {
-                    DecksData.map((x : string) => (
-                        <SelectItem key={x}>
-                            {x}
+                    DecksData.map((x : Deck) => (
+                        <SelectItem key={x.uuid}>
+                            {x.name}
                         </SelectItem>)
                         )
                     }
                 </Select>
-                <Button isIconOnly data-hover="Refresh decks">
+                <Button isIconOnly data-hover="Refresh decks" onPressEnd={()=>{setDecksData([]);}} >
                     <AiOutlineRedo />
                 </Button>
               </NavbarItem>
