@@ -69,3 +69,8 @@ export async function fetchDeckCards(uuid: string): Promise<DeckCard[]> {
         optional { ?c :ascii_name ?asciiName }
     }`
 }
+
+
+export async function addToDeck(Deckuuid: string,CardUUid:String){
+    
+}
