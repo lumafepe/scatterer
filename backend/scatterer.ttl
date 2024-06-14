@@ -106,11 +106,10 @@
 #    Data properties
 #################################################################
 
-###  http://rpcw.di.uminho.pt/2024/scatterer#supertype_name
-:supertype_name rdf:type owl:DatatypeProperty ,
-                         owl:FunctionalProperty ;
-                rdfs:domain :Supertype ;
-                rdfs:range xsd:string .
+###  http://rpcw.di.uminho.pt/2024/scatterer#type_name
+:type_name rdf:type owl:DatatypeProperty ;
+           rdfs:domain :Type ;
+           rdfs:range xsd:string .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/alternative_deck_limit
@@ -284,6 +283,13 @@
               rdfs:range xsd:string .
 
 
+###  http://rpcw.di.uminho.pt/2024/scatterer/supertype_name
+:supertype_name rdf:type owl:DatatypeProperty ,
+                         owl:FunctionalProperty ;
+                rdfs:domain :Supertype ;
+                rdfs:range xsd:string .
+
+
 ###  http://rpcw.di.uminho.pt/2024/scatterer/text
 :text rdf:type owl:DatatypeProperty ,
                owl:FunctionalProperty ;
@@ -425,6 +431,10 @@
 :Supertype rdf:type owl:Class .
 
 
+###  http://rpcw.di.uminho.pt/2024/scatterer/Type
+:Type rdf:type owl:Class .
+
+
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Vanguard
 :Vanguard rdf:type owl:Class ;
           rdfs:subClassOf :Side .
@@ -433,6 +443,12 @@
 #################################################################
 #    Individuals
 #################################################################
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Artifact
+:Artifact rdf:type owl:NamedIndividual ,
+                   :Type ;
+          :type_name "Artifact" .
+
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/B
 :B rdf:type owl:NamedIndividual ,
@@ -447,6 +463,36 @@
        :supertype_name "Basic" .
 
 
+###  http://rpcw.di.uminho.pt/2024/scatterer/Battle
+:Battle rdf:type owl:NamedIndividual ,
+                 :Type ;
+        :type_name "Battle" .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Conspiracy
+:Conspiracy rdf:type owl:NamedIndividual ,
+                     :Type ;
+            :type_name "Conspiracy" .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Creature
+:Creature rdf:type owl:NamedIndividual ,
+                   :Type ;
+          :type_name "Creature" .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Dungeon
+:Dungeon rdf:type owl:NamedIndividual ,
+                  :Type ;
+         :type_name "Dungeon" .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Enchantment
+:Enchantment rdf:type owl:NamedIndividual ,
+                      :Type ;
+             :type_name "Enchantment" .
+
+
 ###  http://rpcw.di.uminho.pt/2024/scatterer/G
 :G rdf:type owl:NamedIndividual ,
             :Color ;
@@ -454,10 +500,34 @@
    :color_name "Green" .
 
 
+###  http://rpcw.di.uminho.pt/2024/scatterer/Hero
+:Hero rdf:type owl:NamedIndividual ,
+               :Type ;
+      :type_name "Hero" .
+
+
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Host
 :Host rdf:type owl:NamedIndividual ,
                :Supertype ;
       :supertype_name "Host" .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Instant
+:Instant rdf:type owl:NamedIndividual ,
+                  :Type ;
+         :type_name "Instant" .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Kindred
+:Kindred rdf:type owl:NamedIndividual ,
+                  :Type ;
+         :type_name "Kindred" .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Land
+:Land rdf:type owl:NamedIndividual ,
+               :Type ;
+      :type_name "Land" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Legendary
@@ -472,11 +542,35 @@
          :supertype_name "Ongoing" .
 
 
+###  http://rpcw.di.uminho.pt/2024/scatterer/Phenomenon
+:Phenomenon rdf:type owl:NamedIndividual ,
+                     :Type ;
+            :type_name "Phenomenon" .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Plane
+:Plane rdf:type owl:NamedIndividual ,
+                :Type ;
+       :type_name "Plane" .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Planeswalker
+:Planeswalker rdf:type owl:NamedIndividual ,
+                       :Type ;
+              :type_name "Planeswalker" .
+
+
 ###  http://rpcw.di.uminho.pt/2024/scatterer/R
 :R rdf:type owl:NamedIndividual ,
             :Color ;
    :color_code "R" ;
    :color_name "Red" .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Scheme
+:Scheme rdf:type owl:NamedIndividual ,
+                 :Type ;
+        :type_name "Scheme" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/Snow
@@ -490,6 +584,12 @@
             :Color ;
    :color_code "U" ;
    :color_name "Blue" .
+
+
+###  http://rpcw.di.uminho.pt/2024/scatterer/Vanguard
+:Vanguard rdf:type owl:NamedIndividual ,
+                   :Type ;
+          :type_name "Vanguard" .
 
 
 ###  http://rpcw.di.uminho.pt/2024/scatterer/W
@@ -637,8 +737,8 @@
           :format_name "timeless" .
 
 
-###  http://rpcw.di.uminho.pt/2024/scatterer/vinatge
-:vinatge rdf:type owl:NamedIndividual ,
+###  http://rpcw.di.uminho.pt/2024/scatterer/vintage
+:vintage rdf:type owl:NamedIndividual ,
                   :Format ;
          :format_name "vintage" .
 

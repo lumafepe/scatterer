@@ -2,7 +2,7 @@ from flask import Flask,request,make_response,jsonify
 from unidecode import unidecode
 import requests
 import json
-import uuid
+from uuid import uuid4
 
 app = Flask(__name__)
 sparql_url = "http://localhost:7200/repositories/scatterer"
@@ -26,10 +26,16 @@ def get_value(v: dict):
     if v['type'] == 'literal':
         return v['value']
     elif v['type'] == 'uri':
-        return v['value'].split('#')[-1]
+        return v['value'].split('/')[-1]
     
 def get_values(v: dict, **keys:dict[str,callable]):
     return {k: t(get_value(v[k])) for k,t in keys.items() if k in v}
+
+def to_bool(b: str) -> bool:
+    return b == 'true'
+
+def to_list(sep: str) -> callable:
+    return lambda s: s.split(sep)
 
 def run_query(query):
     result = None
@@ -46,9 +52,24 @@ def run_query(query):
     return (result, error)
 
 
-@app.route('/cards/<string:uuid>', methods = [ 'GET','OPTIONS' ])
+@app.route('/sets', methods = [ 'GET', 'OPTIONS' ])
+def sets():
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response()
+
+    printings_query = f"""
+    PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
+    select ?code ?name ?date where {{ 
+        ?s a :Set; :set_code ?code; :set_name ?name; :set_date ?date .
+    }}"""
+
+    res,err = run_query(printings_query)
+    return _corsify_actual_response([get_values(s, code=str, name=str, date=str) for s in res['results']])
+
+
+@app.route('/cards/<string:uuid>', methods = [ 'GET', 'OPTIONS' ])
 def card(uuid):
-    if request.method == 'OPTONIS':
+    if request.method == 'OPTIONS':
         return _build_cors_preflight_response()
 
     query = f"""
@@ -60,19 +81,81 @@ def card(uuid):
         optional {{ :{uuid} :isValidLeaderIn ?lf . ?lf :format_name ?lfn }}
     }} group by ?name ?asciiName ?alternativeDeckLimit"""
 
+    res,err = run_query(query)
+    card = get_values(res["results"][0], name=str, alternative_deck_limit=to_bool, asciiName=str, colorIdentities=to_list(None), isValidLeaderIn=str)
+
     printings_query = f"""
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
     select ?code ?name ?date where {{ 
-        ${uuid} a :Card; :hasPrinting ?s .
+        :{uuid} a :Card; :hasPrinting ?s .
         ?s :set_code ?code; :set_name ?name; :set_date ?date .
     }}"""
-    
-    
-    legalities_query = """"""
 
-    sides_query = """"""
+    res,err = run_query(printings_query)
+    card['printings'] = [get_values(p, code=str, name=str, date=str) for p in res['results']]
     
-    return _corsify_actual_response({})
+    legalities_query = f"""
+    PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
+    select ?format ?legality where {{
+        :{uuid} a :Card; (:isLegalIn|:isRestrictedIn|:isBannedIn) ?f.
+        ?f :format_name ?format.
+        
+        optional {{ :{uuid} :isLegalIn      ?f. bind("Legal"      as ?legality) }}.
+        optional {{ :{uuid} :isRestrictedIn ?f. bind("Restricted" as ?legality) }}.
+        optional {{ :{uuid} :isBannedIn     ?f. bind("Banned"     as ?legality) }}
+    }}"""
+
+    res,err = run_query(legalities_query)
+    card['legalities'] = {get_value(l['format']): get_value(l['legality']) for l in res['results']}
+
+    rulings_query = f"""
+    PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
+    select ?text ?date where {{ 
+        :{uuid} a :Card; :hasRuling ?r.
+        ?r :ruling_text ?text; :ruling_date ?date.
+    }}"""
+
+    res,err = run_query(rulings_query)
+    card['rulings'] = [get_values(r, text=str, date=str) for r in res['results']]
+
+    sides_query = f"""
+    PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
+    select ?s ?manaValue ?text ?faceManaValue ?faceName ?defense ?hand ?life ?loyalty ?power ?toughness (group_concat(?color;separator="") as ?colors) (group_concat(?colorIndicator;separator="") as ?colorIndicators) (group_concat(?subtype) as ?subtypes) (group_concat(?type) as ?types) (group_concat(?supertype) as ?supertypes) where {{
+        :{uuid} :hasSide ?s.
+        ?s :mana_value ?manaValue.
+        ?s :text ?text.
+        optional {{ ?s :face_mana_value ?faceManaValue }}
+        optional {{ ?s :face_name ?faceName }}
+        optional {{ ?s :defense ?defense }}
+        optional {{ ?s :hand ?hand }}
+        optional {{ ?s :life ?life }}
+        optional {{ ?s :loyalty ?loyalty }}
+        optional {{ ?s :power ?power }}
+        optional {{ ?s :toughness ?toughness }}
+        optional {{ ?s (:hasColor/:color_code) ?color }}
+        optional {{ ?s (:hasColorIndicator/:color_code) ?colorIndicator }}
+        optional {{ ?s (a/:type_name) ?type }}
+        optional {{ ?s (:hasSubtype/:subtype_name) ?subtype }}
+        optional {{ ?s (:hasSupertype/:supertype_name) ?supertype }}
+    }} group by ?s ?manaValue ?text ?faceManaValue ?faceName ?defense ?hand ?life ?loyalty ?power ?toughness"""
+
+    card['sides'] = []
+    res,err = run_query(sides_query)
+    sides = [get_values(s, s=str, manaValue=int, text=str, faceManaValue=int, faceName=str, defense=str, hand=str, life=str, loyalty=str, power=str, toughness=str, colors=to_list(None), colorIndicators=to_list(None), subtypes=to_list(' '), types=to_list(' '), supertypes=to_list(' ')) for s in res['results']]
+
+    for s in sides:
+        keywords_query = f"""
+        PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
+        select ?keyword where {{ 
+            :{s['s']} (:hasKeyword/:keyword_name) ?keyword
+        }}"""
+
+        res,err = run_query(keywords_query)
+        s['keywords'] = [get_value(k['keyword']) for k in res['results']]
+        del s['s']
+        card['sides'].append(s)
+
+    return _corsify_actual_response(card)
 
 
 newline = '\n'
@@ -95,7 +178,7 @@ def splitArgs(s):
 
 @app.route('/cards', methods = [ 'GET', 'OPTIONS' ])
 def cards():
-    if request.method == 'OPTONIS':
+    if request.method == 'OPTIONS':
         return _build_cors_preflight_response()
 
     page = int(request.args.get('page', 1))
@@ -142,27 +225,28 @@ def cards():
         { f'?c :isValidLeaderIn  {", ".join(f":{f}" for f in leaderIn)    }.' if leaderIn     != [] else '' }
         { f'?c :hasColorIdentity {", ".join(f":{c}" for c in colors)      }.' if colors       != '' else '' }
 
-        ?c :hasSide ?s.
-        ?s a :Side; :mana_value ?m.
+        filter exists {{
+            ?c :hasSide ?s.
+            ?s a :Side; :mana_value ?m.
 
-        { newline.join(f'?s a :{get_card_type(t)}.' for t in types if get_card_type(t) != None) }
+            { newline.join(f'?s a :{get_card_type(t)}.' for t in types if get_card_type(t) != None) }
 
-        { newline.join(f'''
-            filter exists {{
-                ?s ((:hasSubtype/:subtype_name)|(:hasSupertype/:supertype_name)) ?t.
-                filter(lcase(?t) = {json.dumps(t)})
-            }}''' for t in types if get_card_type(t) == None)
-        }
-        
-        { f'filter(?m >= {manaValueMin})' if manaValueMin != None else '' }
-        { f'filter(?m <= {manaValueMax})' if manaValueMax != None else '' }
-        { newline.join(f'''
-            filter exists {{
-                ?s (:hasKeyword/:keyword_name) ?k.
-                filter(lcase(?k) = {json.dumps(k)})
-            }}''' for k in keywords)
-        }
-
+            { newline.join(f'''
+                filter exists {{
+                    ?s ((:hasSubtype/:subtype_name)|(:hasSupertype/:supertype_name)) ?t.
+                    filter(lcase(?t) = {json.dumps(t)})
+                }}''' for t in types if get_card_type(t) == None)
+            }
+            
+            { f'filter(?m >= {manaValueMin})' if manaValueMin != None else '' }
+            { f'filter(?m <= {manaValueMax})' if manaValueMax != None else '' }
+            { newline.join(f'''
+                filter exists {{
+                    ?s (:hasKeyword/:keyword_name) ?k.
+                    filter(lcase(?k) = {json.dumps(k)})
+                }}''' for k in keywords)
+            }
+        }}
     }} limit {limit} offset {offset}"""
 
     res, err = run_query(query)
@@ -172,11 +256,11 @@ def cards():
 #TODO: DELETE?
 @app.route('/decks/new', methods = ['POST', 'OPTIONS'])
 def new_deck():
-    if request.method == 'OPTONIS':
+    if request.method == 'OPTIONS':
         return _build_cors_preflight_response()
 
     name = request.form.get('name')
-    uuid = str(uuid.uuid4())
+    uuid = str(uuid4())
 
     query = f"""
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
@@ -189,7 +273,7 @@ def new_deck():
 
 @app.route('/decks/<string:uuid>', methods = ['GET', 'PATCH', 'OPTIONS'])
 def deck(uuid):
-    if request.method == 'OPTONIS':
+    if request.method == 'OPTIONS':
         return _build_cors_preflight_response()
     elif request.method == 'GET':
         query = f"""
@@ -236,7 +320,7 @@ def deck(uuid):
 
 @app.route('/decks', methods = [ 'GET', 'OPTIONS' ])
 def decks():
-    if request.method == 'OPTONIS':
+    if request.method == 'OPTIONS':
         return _build_cors_preflight_response()
 
     query = """

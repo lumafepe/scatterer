@@ -47,9 +47,10 @@ def replace(list, elem, other):
         if e == elem:
             list[i] = other
 
-def maybeAdd(g, subject, predicate, maybeObject):
+def maybeAdd(g, subject, predicate, maybeObject, trans=None):
     if maybeObject != None:
-        g.add((subject, predicate, Literal(maybeObject)))
+        obj = maybeObject if trans == None else trans(maybeObject)
+        g.add((subject, predicate, Literal(obj)))
 
 class URICounter:
     def __init__(self, prefix, onInit):
@@ -130,12 +131,13 @@ def build_graph(atomicCards, setList, uuids):
     for name,sides in data:
         side0 = sides[0]
         #card = uri(side0.get('asciiName', name))
-        card = uri(side0['identifiers']['scryfallOracleId'])
+        uuid = uuids[side0['identifiers']['scryfallOracleId']]
+        card = uri(uuid)
         g.add((card, RDF.type, scatterer.Card))
         
         g.add((card, scatterer.alternative_deck_limit, Literal(side0.get('hasAlternativeDeckLimit', False))))
         maybeAdd(g, card, scatterer.ascii_name, side0.get('asciiName'))
-        g.add((card, scatterer.scryfall_uuid, Literal(uuids[side0['identifiers']['scryfallOracleId']])))
+        g.add((card, scatterer.scryfall_uuid, Literal(uuid)))
         g.add((card, scatterer.name, Literal(name)))
         for c in side0['colorIdentity']:
             g.add((card, scatterer.hasColorIdentity, uri(c)))
@@ -169,12 +171,12 @@ def build_graph(atomicCards, setList, uuids):
                 g.add((side, RDF.type, uri(t)))
 
             maybeAdd(g, side, scatterer.defense, s.get('defense'))
-            maybeAdd(g, side, scatterer.face_mana_value, s.get('faceManaValue'))
+            maybeAdd(g, side, scatterer.face_mana_value, s.get('faceManaValue'), int)
             maybeAdd(g, side, scatterer.face_name, s.get('faceName'))
             maybeAdd(g, side, scatterer.hand, s.get('hand'))
             maybeAdd(g, side, scatterer.life, s.get('life'))
             maybeAdd(g, side, scatterer.loyalty, s.get('loyalty'))
-            g.add((side, scatterer.mana_value, Literal(s['manaValue'])))
+            g.add((side, scatterer.mana_value, Literal(int(s['manaValue']))))
             maybeAdd(g, side, scatterer.power, s.get('power'))
             g.add((side, scatterer.side, Literal(s.get('side', 'a'))))
             g.add((side, scatterer.text, Literal(s.get('text', ''))))
