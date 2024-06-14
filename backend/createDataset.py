@@ -1,12 +1,15 @@
 from rdflib import Graph, URIRef, Literal, Namespace
 from rdflib.namespace import RDF, XSD
 import urllib.request
+import requests
 import tempfile
 import ijson
 import gzip
 import os
 
 #CONSTANTS
+graphdb_url = 'http://localhost:7200'
+
 scatterer = Namespace("http://rpcw.di.uminho.pt/2024/scatterer/")
 badCards = ["Darksteel Ingot", "Gonti, Lord of Luxury"]
 validTypes = set(["Artifact", "Battle", "Conspiracy", "Creature", "Dungeon", 
@@ -77,6 +80,9 @@ def download_file(url, cache_path, decompress=False):
             cache.write(f.read())
 
         f.close()
+        print("done\n")
+    else:
+        print("using cached file\n")
 
     return open(cache_path, 'rb')
 
@@ -224,23 +230,51 @@ def build_graph(atomicCards, setList):
 
 
 def main():
-    print('Downloading cards dataset...')
-    atomicCards = download_file('https://mtgjson.com/api/v5/AtomicCards.json.gz', 'data/atomicCards.json', True)
+    if not os.path.isfile("data/dataset.ttl"):
+        print('Downloading cards dataset...')
+        atomicCards = download_file('https://mtgjson.com/api/v5/AtomicCards.json.gz', 'data/atomicCards.json', True)
 
-    print('Downloading sets dataset...')
-    setList = download_file('https://mtgjson.com/api/v5/SetList.json', 'data/sets.json')
+        print('Downloading sets dataset...')
+        setList = download_file('https://mtgjson.com/api/v5/SetList.json', 'data/sets.json')
 
-    print('Parsing datasets...')
-    g = build_graph(atomicCards, setList)
+        print('Generating dataset...')
 
-    atomicCards.close()
-    setList.close()
+        g = build_graph(atomicCards, setList)
 
-    print("Finished parsing.", len(g), "triplets generated")
-    print("Writing to file...")
+        atomicCards.close()
+        setList.close()
 
-    g.serialize("data/dataset.ttl")
+        print(len(g), "triplets generated\n")
+        print("Writing to file...")
 
+        g.serialize("data/dataset.ttl")
+        print("done\n")
+
+    print("Creating repo...")
+
+    with open('scatterer-config.ttl','rb') as config:
+        url = f"{graphdb_url}/rest/repositories"
+        headers = {'Accept': 'application/json'}
+        files = {'config': config}
+        response = requests.post(url, headers=headers, files=files)
+    
+    if not response.ok:
+        print(response.json()['message'])
+        exit(1)
+
+    print("done\n")
+    print("Inserting data from dataset...")
+
+    with open('data/dataset.ttl','rb') as data:
+        url = f"{graphdb_url}/repositories/scatterer/statements"
+        headers = {'Accept': 'application/json','Content-Type': 'application/x-turtle'}
+        response = requests.put(url, headers=headers, data=data.read())
+
+    if not response.ok:
+        print(response.json()['message'])
+        exit(1)
+
+    print('done')
 
 if __name__ == "__main__":
     main()
