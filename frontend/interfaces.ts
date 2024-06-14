@@ -62,20 +62,20 @@ export enum Legality {
 export interface Filters {
   name?: string; //searchbar
 
+  types: string[]; //searchbar
+
+  keywords: string[]; //searchbar
+
   colors: string; //list of chars: 'BGRUW' //multiselctor
   colorInclusivity?: Inclusivity; //selector with default
 
-  types: string[]; //searchbar
+  sets: string[]; //multiselector
+  leaderIn: string[]; //multiselector
 
   manaValueMin?: number; // 1 text fields
   manaValueMax?: number; // 1 text fields
-  keywords: string[]; //searchbar
-
-  sets: string[]; //multiselector
-
+  
   formats: { [format: string]: Legality } //selector for each
-
-  leaderIn: string[]; //multiselector
 }
 
 export function emptyFilter(): Filters {

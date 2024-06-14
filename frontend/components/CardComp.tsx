@@ -30,7 +30,6 @@ const Name:React.FC<Names> = ({name,asciiName})=>{
 
 const CardComp: React.FC<CardCompProps> = ( {name,scryfallUUID,quantity} ) => {
   let imageSrc = "https://api.scryfall.com/cards/"+scryfallUUID+"?format=image";
-  console.log(quantity);
   if (quantity === undefined){
     return (
       <Card className="p-4 border rounded-lg shadow-md flex justify-center">
