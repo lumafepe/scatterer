@@ -23,6 +23,7 @@ function getDeckCookie(): string | undefined {
 }
 
 
+
 const CardDetails: React.FC<CardDetailsProps> = ({ card }) => {
   const [adding, setAdding] = useState<boolean>(false);
   

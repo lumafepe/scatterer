@@ -60,22 +60,22 @@ export enum Legality {
 }
 
 export interface Filters {
-  name?: string;
+  name?: string; //searchbar
 
-  colors: string; //list of chars: 'BGRUW'
-  colorInclusivity?: Inclusivity;
+  types: string[]; //searchbar
 
-  types: string[];
+  keywords: string[]; //searchbar
 
-  manaValueMin?: number;
-  manaValueMax?: number;
-  keywords: string[];
+  colors: string; //list of chars: 'BGRUW' //multiselctor
+  colorInclusivity?: Inclusivity; //selector with default
 
-  sets: string[];
+  sets: string[]; //multiselector
+  leaderIn: string[]; //multiselector
 
-  formats: { [format: string]: Legality }
-
-  leaderIn: string[];
+  manaValueMin?: number; // 1 text fields
+  manaValueMax?: number; // 1 text fields
+  
+  formats: { [format: string]: Legality } //selector for each
 }
 
 export function emptyFilter(): Filters {
@@ -96,6 +96,7 @@ export interface Deck {
 }
 
 export interface DeckCard {
-  card: MagicCard;
+  name: string;
+  scryfallUUID: string;
   quantity: number;
 }

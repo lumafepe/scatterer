@@ -3,9 +3,11 @@ from rdflib.namespace import RDF, XSD
 import urllib.request
 import requests
 import tempfile
+import requests
 import ijson
 import gzip
 import os
+import json
 
 #CONSTANTS
 graphdb_url = 'http://localhost:7200'
@@ -66,7 +68,7 @@ class URICounter:
 
 def download_file(url, cache_path, decompress=False):
     if not os.path.isfile(cache_path):
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        req = urllib.request.Request(url() if callable(url) else url, headers={'User-Agent': 'Mozilla/5.0'})
         f = urllib.request.urlopen(req)
 
         if decompress:
@@ -86,7 +88,19 @@ def download_file(url, cache_path, decompress=False):
 
     return open(cache_path, 'rb')
 
-def build_graph(atomicCards, setList):
+def get_uuidConversions():
+    def url():
+        for file in requests.get('https://api.scryfall.com/bulk-data').json()['data']:
+            if file['type']=='oracle_cards':
+                return file['download_uri']
+
+    uuids = download_file(url,'data/uuids.json',decompress=False)
+    data = {x['oracle_id']:x['id'] for x in json.load(uuids)}
+    uuids.close()
+    return data
+
+
+def build_graph(atomicCards, setList, uuids):
     g = Graph()
     g.parse('scatterer.ttl')
 
@@ -121,7 +135,7 @@ def build_graph(atomicCards, setList):
         
         g.add((card, scatterer.alternative_deck_limit, Literal(side0.get('hasAlternativeDeckLimit', False))))
         maybeAdd(g, card, scatterer.ascii_name, side0.get('asciiName'))
-        g.add((card, scatterer.scryfall_uuid, Literal(side0['identifiers']['scryfallOracleId'])))
+        g.add((card, scatterer.scryfall_uuid, Literal(uuids[side0['identifiers']['scryfallOracleId']])))
         g.add((card, scatterer.name, Literal(name)))
         for c in side0['colorIdentity']:
             g.add((card, scatterer.hasColorIdentity, uri(c)))
@@ -237,9 +251,11 @@ def main():
         print('Downloading sets dataset...')
         setList = download_file('https://mtgjson.com/api/v5/SetList.json', 'data/sets.json')
 
-        print('Generating dataset...')
+        print('Downloading uuids dataset...')
+        uuids = get_uuidConversions()
 
-        g = build_graph(atomicCards, setList)
+        print('Generating scatterer dataset...')
+        g = build_graph(atomicCards, setList, uuids)
 
         atomicCards.close()
         setList.close()

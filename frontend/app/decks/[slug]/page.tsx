@@ -34,7 +34,7 @@ const CardPage: React.FC = () => {
         {cards ?
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {cards.map((item, _) => (
-              <CardComp card={item.card} quantity={item.quantity} />
+              <CardComp scryfallUUID={item.scryfallUUID} name={item.name} quantity={item.quantity} />
           ))}
         </div>
         : <p>No cards found</p>}

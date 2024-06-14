@@ -56,7 +56,7 @@ export default function RootLayout({
                 href="https://github.com/lumafepe/"
                 title="Luís Pereira homepage"
               >
-                <p className="text-primary">Luís Pereira</p>
+                <p className="text-primary"> Luís Pereira </p>
               </Link>
               &
               <Link
@@ -65,7 +65,7 @@ export default function RootLayout({
                 href="https://github.com/tiago-bacelar/"
                 title="Tiago Pereira homepage"
               >
-                <p className="text-primary">Tiago Pereira</p>
+                <p className="text-primary"> Tiago Pereira </p>
               </Link>
             </footer>
           </div>
