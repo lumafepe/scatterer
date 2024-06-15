@@ -271,8 +271,6 @@ def new_deck():
         :{uuid} a :Deck; :deck_name {json.dumps(name)}; :deck_uuid :{uuid}.
     }}"""
 
-    print(query)
-
     _,err = run_query(query)
     return _corsify_actual_response({"uuid": uuid, "name": name, "card_number": 0})
 
