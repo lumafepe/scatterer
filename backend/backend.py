@@ -154,7 +154,7 @@ def card(uuid):
 
     card['sides'] = []
     res,err = select_query(sides_query)
-    sides = [select_query(s, s=str, manaValue=int, text=str, faceManaValue=int, faceName=str, defense=str, hand=str, life=str, loyalty=str, power=str, toughness=str, colors=list, colorIndicators=list, subtypes=to_list(' '), types=to_list(' '), supertypes=to_list(' ')) for s in res['results']]
+    sides = [get_values(s, s=str, manaValue=int, text=str, faceManaValue=int, faceName=str, defense=str, hand=str, life=str, loyalty=str, power=str, toughness=str, colors=list, colorIndicators=list, subtypes=to_list(' '), types=to_list(' '), supertypes=to_list(' ')) for s in res['results']]
 
     for s in sides:
         keywords_query = f"""
@@ -343,6 +343,8 @@ def deck(uuid):
         }}"""
 
         err = update_query(update)
+        
+        return _corsify_actual_response({})
 
 @app.route('/decks', methods = [ 'GET', 'OPTIONS' ])
 def decks():

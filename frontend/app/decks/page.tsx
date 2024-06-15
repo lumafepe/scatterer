@@ -20,9 +20,9 @@ const CardPage: React.FC = () => {
         setIsLoading(false);
         setAddDeckCard("");
       }
-      if (isLoading==true)
+      if (isLoading===true)
         fetchDecksData();
-  }, [isLoading,addDeckCard]);
+  }, [cardData]);
 
   if (isLoading) {
     return (
@@ -37,7 +37,12 @@ const CardPage: React.FC = () => {
         <div className='flex justify-start items-center mb-4'>
           <h3 className='mr-4 w-max'>Crete New Deck: </h3>
           <Input className='mr-4 max-w-64' type="string" label="Deck Name" placeholder="" labelPlacement="inside" value={addDeckCard} onValueChange={setAddDeckCard}/>
-          <Button className='w-max' color='warning' isIconOnly onPress={()=>{createDeck(addDeckCard);setIsLoading(true);}}><FaPlus /></Button>
+          <Button className='w-max' color='warning' isIconOnly onPress={async ()=>{
+              const a:Deck = await createDeck(addDeckCard);
+              if (cardData===null) setDecksData([a]);
+              else setDecksData([].concat(cardData, a));
+              setIsLoading(true);
+            }}><FaPlus /></Button>
         </div>
         {cardData ?
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

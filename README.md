@@ -28,72 +28,57 @@ git clone <https://github.com/lumafepe/rpcw-proj>
 cd rpcw-proj
 docker-compose up --build
 Se for a primeira vez:
-docker exec -it engweb2023-projeto-api-server-1 python manage.py migrate
+docker exec -it rpcw-proj-backend-1 python createDataset.py 
 ```
 
-Após isto, temos garantidamente a API de dados a ser executada em [localhost:8000](http://localhost:8000/) e a interface em [localhost:80/home](http://localhost/home), ambas prontas a ser utilizadas.
+Após isto, temos garantidamente a API de dados a ser executada em [localhost:8000](http://localhost:8000/) e a interface em [localhost:3000](http://localhost:3000), ambas prontas a ser utilizadas.
 
-Relativamente às bases de dados, estas podem ser acedidas através `mongodb://localhost:27017`(MongoDB) e `postgresql://localhost:5432` (Postgres).
+Relativamente à base de dado, esta pode ser acedida através `localhost:7200`.
 
 ### Configuração
 
-O **Acordb** dispõe de varias opções de configuração. As principais configurações incluem:
+O **Scatterer** dispõe de varias opções de configuração. As principais configurações incluem:
 
-- `settings.py`: Configura algumas definições da *backend* assim como ficheiros estáticos e tipos de base de dados a serem usadas.
 - `docker-compose.yml`: Define os serviços, redes, volumes de dados dos containers Docker.
-- `.env`: Guarda variáveis de ambiente usadas dentro do `settings.py` e dentro do servidor de frontend para guardar chaves e credenciais.
+- `.env`: Guarda variáveis de ambiente usadas dentro do servidor de frontend para o enderesso do backend
 
 ## Funcionalidades Implementadas
 
-### Níveis de Acesso e Utilizadores
+### Cartas
 
-- Três níveis de acesso (utilizadores sem conta, utilizadores com conta (consumidores) e administradores) com diferentes níveis de permissões.
-- Utilizadores sem conta conseguem apenas consultar/pesquisar acórdãos.
-- Consumidores conseguem consultar/pesquisar, sugerir alterações e guardar acórdãos nos favoritos.
-- Administradores conseguem consultar/pesquisar, sugerir alterações, guardar acórdãos nos favoritos, aprovar pedir de alterações e criar através de formulário ou **upload** de ficheiro acórdãos. Para além disso, os administradores podem tornar outros utilizadores em administradores.
-- Todos os utilizadores com conta registada têm a liberdade de alterar o seu nome (primeiro nome, segundo nome) e/ou **password**.
+- Listar todas as cartas
+- Pesquisa avançada por vários campos das cartas.
+- Possibilidade de guardar cartas em decks
+- Ver informação completa de uma carta
+### Decks
 
-### Autenticação, Autorização
-
-- Autenticação através de **email** e ***password.***
-- Autorização através de API ***Key***.
-- Autenticação através da conta Google.
-- Criação de contas através da conta Google ou formulário.
-
-### Acórdãos
-
-- Capacidade de criação e/ou adição de novos acórdãos.
-- Pesquisa avançada sobre os dados de um acórdão.
-- Possibilidade de guardar acórdãos nos favoritos.
-- Possibilidade de sugerir alterações a acórdãos.
-- Capacidade de verificar o histórico de modificações realizadas a um acórdão.
-
+- Listar todos os decks
+- Ver as cartas de um deck
+- Criar novos decks
 ### Interface
 
-- Interface reativa, intuitiva, consistente e minimalista.
+- Interface reativa, intuitiva e minimalista.
 
 # Arquitetura da Aplicação
 
-A aplicação está divida em quatro partes distintas.
+A aplicação está divida em três partes distintas.
 
 1. ***Frontend (Interface)***
-Desenvolvido em [SvelteKit](https://kit.svelte.dev/), comunica diretamente com o *backend* para gestão de dados. É responsável por mostrar ao utilizador os dados dos acórdãos, e a possibilidade de gestão dos mesmos.
+Desenvolvido em [Nextjs](https://nextjs.org/), comunica diretamente com o *backend* para gestão de dados. É responsável por mostrar ao utilizador os dados das cartas, e a possibilidade de gestão das mesmas.
 2. ***Backend***
-Desenvolvido em Django, providencia uma **Restfull** API com a qual o *frontend* comunica. Para além disso comunica com ambas as bases de dados para implementar a lógica da aplicação.
+Desenvolvido em Flask, providencia uma **Restfull** API com a qual o *frontend* comunica. Para além disso comunica com a base de dados para implementar a lógica da aplicação.
 3. ***Base de Dados Não Relacional (MongoDB)***
 Desenvolvida em MongoDB, é utilizada para guardar dados sobre os quais não se tem a certeza quais os seus campos nem o tamanho/tipo dos seus valores. Neste caso foi usado para guardar os dados das várias versões de um acórdão.
-4. **Base de dados relacional (PostgresSQL)**
-Esta foi feita em PostgreSQL devido a sua velocidade. É usada para guardar todos os dados relativos aos utilizadores, favoritos, chaves de API e meta-data sobre os acórdãos (quem adicionou, quando adicionou, etc.).
+4. **Base de dados (GraphDB)**
+TODO
 
-A escolha de ter duas bases de dados veio da incompatibilidade base de Django com MongoDB, no entanto, devido a velocidade de PostgreSQL esta decisão acabou por se tornar bastante boa mantendo um nível simples de controlo e permitindo uma solução especifica para o problema na comunicação com MongoDB.
-
-Na seguinte figura, podemos observar um diagrama que representa a arquitetura geral do sistema:
-
-![image](https://github.com/gweebg/acordb/blob/main/docs/arq.svg)
+![image](https://github.com/lumafepe/rpcw-proj/arq.svg)
 
 # Desenvolvimento do ***Backend***
 
 ### Normalização dos **datasets**
+
+TODO
 
 Dado que eram fornecidos 14 *datasets* diferentes, com o objetivo de reduzir o número de chaves foi feita uma normalização deste *datasets*. Visto que havia vários descritores com o mesmo significado ou um descritor com a informação de vários estes foram também normalizados.
 
@@ -115,17 +100,19 @@ Na normalização de *datasets* a principal operação é a de adicionar valores
 
 ### *Seeding* da base de dados
 
-Para colocar automaticamente os dados nas bases de dados foi gerado um comando de gestão Django para dar seed de um ou vários ficheiros (caso um caminho para uma pasta lhe seja fornecido), chamado `seed`.
+Para colocar automaticamente os dados nas bases de dados foi gerado um programa que automaticamente faz download dos dados e dá seed destes no graphdb.
+
+Visto este remover os dados antigos e colocar os novos esta aplicação pode ser colocada num *chron job* para automatizar a atualização dos dados. 
 
 Para utilizar basta executar dentro do *container* da *backend*:
 
 ```
-python manage.py seed {pasta_com_os_datasets}
+python3 createDataset.py
 ```
 
-Os datasets já normalizados estão disponíveis no [OneDrive](https://uminho365-my.sharepoint.com/:f:/g/personal/a96681_uminho_pt/EnGrLHYMyEBOufUKmbFotNoBm32uLj23-LHS6pYDQO7UnQ?e=j1aXA5).
-
 ### *Backend*
+
+TODO
 
 Visto que parte do grupo já tinha bastante experiência com a *framework* `Django` e esta possui bastantes extensões, que nos foram úteis, o grupo decidiu usá-la.
 
@@ -147,12 +134,16 @@ Relativamente às funcionalidades, temos particular orgulho na implementação d
 
 ### **Frontend**
 
-Para a realização do **frontend** foi utilizado `Svelte + JavaScript` juntamente com a ***framework*** `Sveltekit`, visto que, mais uma vez, parte do grupo já possuia experiência.  Algumas das vantagens de usar o `SvelteKit` em relação a outras *frameworks* como `React`, `Vue` e `Angular` incluem a sua simplicidade, desempenho e tamanho. `SvelteKit` foi projetado para ser leve e rápido, com um tamanho de pacote pequeno que permite carregamentos rápidos de página. Além disso, possui uma sintaxe e API mais simples do que outras *frameworks.* Finalmente, `SvelteKit` possui renderização do lado do servidor integrada e suporta geração de sites estáticos, tornando-o adequado para construir sites rápidos e amigáveis.
+Para a realização do **frontend** foi utilizado `TypeScript` juntamente com as ***frameworks*** `NextJS` e `NextUI`, visto parte do grupo já possuia experiência com estas frameworks. Enquanto que `NextJS` trata de routing e renderização de pedidos `NextUI` disponibiliza 
 
-Esta camada é responsável por comunicar com o **backend,** porém, esta, também possui a sua própria API que facilita a gestão de rotas (por exemplo impedir que o utilizador volte a uma página protegida logo após o ***logout***) e autenticação através do Google. Graças ao SSR (Server Side Rendering), podemos executar no servidor apenas pedidos autenticados enquanto que pedidos não autenticados podem ser executados pelo cliente (********browser********), isto diminui o *********overhead********* no servidor aumentado a reatividade e velocidade da aplicação. 
+Como já referido previamente, podemos testar a interface em http://localhost:3000/ que nos leva à página principal da nossa aplicação onde podemos executar qualquer pesquisa ou consultar as cartas. 
 
-Como já referido previamente, podemos testar a interface em http://localhost/home que nos leva à página principal da nossa aplicação onde podemos executar qualquer pesquisa, consultar os 10 acórdãos mas recentes assim como as estatísticas gerais relativas ao serviço. 
+Da página inicial temos acesso também aos *********decks********* (http://localhost:3000/decks) que nos listar todos os decks existentes com o seu nome e o número de cartas existentes. Para além disso, é tambem possivel criar novos decks apartir desta página.
 
-Da página inicial temos acesso também ao *********dashboard********* (http://localhost/user) que nos permite a navegação pela aba do perfil, pedidos feitos e favoritos. Para além disso, caso o utilizador seja administrador também tem a possibilidade de adicionar um acórdão. Isto pode ser realizado através do preenchimento de um formulário ou do **********upload********** de um ficheiro `json` devidamente formatado.  Para além disso também podemos consultar um acórdão (`http://localhost/ruling/{id}`) onde podemos observar todo o conteúdo do acórdão, assim como sugerir alterações, favoritar e verificar versões anteriores.
+Também podemos consultar uma carta `http://localhost:3000/card/{id}` onde podemos observar todo o conteúdo da carta, assim como adiciona-la a um *deck*.
 
-No fundo estas três rotas mencionadas são as mais importantes dado que nos permitem realizar todas as operações da aplicação.
+Para consultar as cartas pertencentes a um *Deck* basta aceder a `http://localhost:3000/decks/{id}`.
+
+
+
+No fundo estas quatro rotas mencionadas permitem realizar todas as operações da aplicação.
