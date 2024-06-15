@@ -37,6 +37,9 @@ def to_bool(b: str) -> bool:
 def to_list(sep: str) -> callable:
     return lambda s: s.split(sep)
 
+def with_sign(n: int) -> str:
+    return str(n) if n < 0 else f"+{n}"
+
 def run_query(query):
     result = None
     error = ""
@@ -271,7 +274,8 @@ def new_deck():
     _,err = run_query(query)
     return _corsify_actual_response({"uuid": uuid, "name": name, "card_number": 0})
 
-@app.route('/decks/<string:uuid>', methods = ['GET', 'PATCH', 'OPTIONS'])
+
+@app.route('/decks/<string:uuid>', methods = ['GET', 'PUT', 'OPTIONS'])
 def deck(uuid):
     if request.method == 'OPTIONS':
         return _build_cors_preflight_response()
@@ -289,32 +293,43 @@ def deck(uuid):
         return _corsify_actual_response(
             [get_values(dc, name=str, asciiName=str, scryfallUUID=str, quantity=str) for dc in res["results"]]
         )
-    elif request.method == 'PATCH':
+    elif request.method == 'PUT':
         cardUUID = request.form.get('card')
+        increment = request.form.get('increment')
         quantity = request.form.get('quantity')
 
-        if quantity <= 0:
-            update = f"""
-            PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
-            delete where {{
-                :{uuid} :hasDeckCard ?dc.
-                ?dc a :DeckCard; :ofCard :{cardUUID}; :deckcard_quantity ?q.
-            }}"""
-        else:
-            update = f"""
-            PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
-            delete {{
-                ?dc :deckcard_quantity ?q.
-            }} insert {{
-                :{uuid} :hasDeckCard ?dc.
-                ?dc a :DeckCard; :ofCard :{cardUUID}; :deckcard_quantity {quantity}.
-            }} where {{ 
-                OPTIONAL {{
-                    :{uuid} :hasDeckCard ?aux.
-                    ?aux a :DeckCard; :ofCard :{cardUUID}; :deckcard_quantity ?q.
+        qbind = quantity if quantity != None else f"coalesce(?old_q, 0){with_sign(increment)}"
+        update = f"""
+        PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        delete {{
+            ?d :hasDeckCard ?old_dc.
+            ?old_dc a :DeckCard; :ofCard ?c; :deckcard_quantity ?old_q.
+        }} insert {{
+            ?d :hasDeckCard ?dc.
+            ?dc a :DeckCard; :ofCard ?c; :deckcard_quantity ?quantity.
+        }} where {{
+            bind(:{cardUUID} as ?c)
+            bind(:{uuid} as ?d)
+            bind({qbind} as ?q)
+        
+            optional {{
+                ?d :hasDeckCard ?old_dc.
+                ?old_dc a :DeckCard; :ofCard ?c; :deckcard_quantity ?old_q.
+            }}
+            
+            optional {{
+                ?c :alternative_deck_limit "false"^^xsd:boolean.
+                filter not exists {{
+                    ?c :hasSide ?s.
+                    ?s a :Land; :hasSupertype :Basic.
                 }}
-                BIND(COALESCE(?aux, BNODE()) AS ?dc)
-            }}"""
+                bind(4 as ?limit)
+            }}
+            
+            bind(if(?q > 0,coalesce(?old_dc, bnode()),1+"") as ?dc)
+            bind(if(bound(?limit) && ?limit < ?q,?limit,?q) as ?quantity)
+        }}"""
 
         _,err = run_query(update)
 

@@ -26,8 +26,8 @@ def isValid(side):
     return "isFunny" not in side \
         and ("firstPrinting" not in side or side["firstPrinting"] != "TBTH") \
         and (side["name"] not in badCards or "firstPrinting" in side) \
-        and set(side["types"]).issubset(validTypes)
-        #and (side["display"] != "reversible_card")
+        and set(side["types"]).issubset(validTypes) \
+        and (side["display"] != "reversible_card")
 
 def mainSet(s):
     return s['type'] in mainSets
@@ -217,12 +217,12 @@ def build_graph(atomicCards, setList, uuids):
     g.add((ref, scatterer.deck_name, Literal("Deck Fixe")))
     g.add((ref, scatterer.hasDeckCard, uri("dc1")))
     g.add((uri("dc1"), RDF.type, scatterer.DeckCard))
-    g.add((uri("dc1"), scatterer.deckcard_quantity, Literal(3)))
-    g.add((uri("dc1"), scatterer.ofCard, uri("0004ebd0-dfd6-4276-b4a6-de0003e94237")))
+    g.add((uri("dc1"), scatterer.deckcard_quantity, Literal(4)))
+    g.add((uri("dc1"), scatterer.ofCard, uri("0001e77a-7fff-49d2-a55c-42f6fdf6db08")))
     g.add((ref, scatterer.hasDeckCard, uri("dc2")))
     g.add((uri("dc2"), RDF.type, scatterer.DeckCard))
-    g.add((uri("dc2"), scatterer.deckcard_quantity, Literal(4)))
-    g.add((uri("dc2"), scatterer.ofCard, uri("0006faf6-7a61-426c-9034-579f2cfcfa83")))
+    g.add((uri("dc2"), scatterer.deckcard_quantity, Literal(3)))
+    g.add((uri("dc2"), scatterer.ofCard, uri("0007efdf-417d-48a7-b119-3a2fda3e1158")))
 
     uuid = "adb8e0ee-a2aa-4cbb-8fe4-bfa46cd41fdf"
     ref = uri(uuid)
@@ -232,15 +232,15 @@ def build_graph(atomicCards, setList, uuids):
     g.add((ref, scatterer.hasDeckCard, uri("dc3")))
     g.add((uri("dc3"), RDF.type, scatterer.DeckCard))
     g.add((uri("dc3"), scatterer.deckcard_quantity, Literal(3)))
-    g.add((uri("dc3"), scatterer.ofCard, uri("0007c283-5b7a-4c00-9ca1-b455c8dff8c3")))
+    g.add((uri("dc3"), scatterer.ofCard, uri("0001e77a-7fff-49d2-a55c-42f6fdf6db08")))
     g.add((ref, scatterer.hasDeckCard, uri("dc4")))
     g.add((uri("dc4"), RDF.type, scatterer.DeckCard))
     g.add((uri("dc4"), scatterer.deckcard_quantity, Literal(4)))
-    g.add((uri("dc4"), scatterer.ofCard, uri("000d5588-5a4c-434e-988d-396632ade42c")))
+    g.add((uri("dc4"), scatterer.ofCard, uri("00101358-0e89-4bd1-b1f2-e889645b616e")))
     g.add((ref, scatterer.hasDeckCard, uri("dc5")))
     g.add((uri("dc5"), RDF.type, scatterer.DeckCard))
     g.add((uri("dc5"), scatterer.deckcard_quantity, Literal(3)))
-    g.add((uri("dc5"), scatterer.ofCard, uri("000d8291-d6a8-436e-9e17-7531333686a8")))
+    g.add((uri("dc5"), scatterer.ofCard, uri("0014def3-4063-4929-ac51-76aef1bb2a68")))
     
     return g
 

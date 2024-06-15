@@ -58,12 +58,16 @@ export async function fetchDeckCards(uuid: string): Promise<DeckCard[]> {
     return response.data;
 }
 
-export async function updateDeckCard(uuid: string, cardUUID: string, quantity: number): Promise<void> {
-    const response = await API.patch(`/decks/${uuid}`, {
+export async function setDeckCard(uuid: string, cardUUID: string, quantity: number): Promise<void> {
+    const response = await API.put(`/decks/${uuid}`, {
         card: cardUUID,
         quantity: quantity
     });
 }
 
-//TODO
-export async function addToDeck(Deckuuid: string,CardUUid:String){}
+export async function updateDeckCard(uuid: string, cardUUID: string, increment: number): Promise<void> {
+    const response = await API.put(`/decks/${uuid}`, {
+        card: cardUUID,
+        increment: increment
+    });
+}
