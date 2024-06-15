@@ -35,7 +35,7 @@ def to_bool(b: str) -> bool:
     return b == 'true'
 
 def to_list(sep: str) -> callable:
-    return lambda s: s.split(sep)
+    return lambda s: [] if s == "" else s.split(sep)
 
 def with_sign(n: int) -> str:
     return str(n) if n < 0 else f"+{n}"
@@ -85,7 +85,7 @@ def card(uuid):
     }} group by ?name ?asciiName ?alternativeDeckLimit"""
 
     res,err = run_query(query)
-    card = get_values(res["results"][0], name=str, alternative_deck_limit=to_bool, asciiName=str, colorIdentities=to_list(None), isValidLeaderIn=str)
+    card = get_values(res["results"][0], name=str, alternative_deck_limit=to_bool, asciiName=str, colorIdentities=list, isValidLeaderIn=str)
 
     printings_query = f"""
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
@@ -144,7 +144,7 @@ def card(uuid):
 
     card['sides'] = []
     res,err = run_query(sides_query)
-    sides = [get_values(s, s=str, manaValue=int, text=str, faceManaValue=int, faceName=str, defense=str, hand=str, life=str, loyalty=str, power=str, toughness=str, colors=to_list(None), colorIndicators=to_list(None), subtypes=to_list(' '), types=to_list(' '), supertypes=to_list(' ')) for s in res['results']]
+    sides = [get_values(s, s=str, manaValue=int, text=str, faceManaValue=int, faceName=str, defense=str, hand=str, life=str, loyalty=str, power=str, toughness=str, colors=list, colorIndicators=list, subtypes=to_list(' '), types=to_list(' '), supertypes=to_list(' ')) for s in res['results']]
 
     for s in sides:
         keywords_query = f"""
