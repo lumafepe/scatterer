@@ -17,7 +17,6 @@ badCards = ["Darksteel Ingot", "Gonti, Lord of Luxury"]
 validTypes = set(["Artifact", "Battle", "Conspiracy", "Creature", "Dungeon", 
                   "Enchantment", "Hero", "Instant", "Kindred", "Land", "Phenomenon",
                   "Plane", "Planeswalker", "Scheme", "Sorcery", "Vanguard"])
-mainSets = set([])
 
 #FILTERS
 def isValid(side):
@@ -28,9 +27,6 @@ def isValid(side):
         and (side["name"] not in badCards or "firstPrinting" in side) \
         and set(side["types"]).issubset(validTypes) \
         and (side["layout"] != "reversible_card")
-
-def mainSet(s):
-    return s['type'] in mainSets
 
 #UTILS
 def uri(name):
@@ -268,8 +264,18 @@ def main():
         g.serialize("data/dataset.ttl")
         print("done\n")
 
-    print("Creating repo...")
+    print("Creating repository...")
+    
+    #Delete repo if already exists
+    url = f"{graphdb_url}/rest/repositories/scatterer"
+    headers = {'Accept': '*/*'}
+    response = requests.delete(url, headers=headers)
 
+    if not response.ok:
+        print(response.json()['message'])
+        exit(1)
+
+    #Create repo
     with open('scatterer-config.ttl','rb') as config:
         url = f"{graphdb_url}/rest/repositories"
         headers = {'Accept': 'application/json'}
