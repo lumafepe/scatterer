@@ -77,15 +77,15 @@ def card(uuid):
 
     query = f"""
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
-    select ?name ?alternativeDeckLimit ?asciiName (group_concat(distinct ?cic;separator="") as ?colorIdentities) (group_concat(distinct ?lfn) as ?isValidLeaderIn) where {{
-        :{uuid} a :Card; :name ?name; :alternative_deck_limit ?alternativeDeckLimit .
+    select ?name ?scryfallUUID ?alternativeDeckLimit ?asciiName (group_concat(distinct ?cic;separator="") as ?colorIdentities) (group_concat(distinct ?lfn) as ?isValidLeaderIn) where {{
+        :{uuid} a :Card; :name ?name; :scryfall_uuid ?scryfallUUID; :alternative_deck_limit ?alternativeDeckLimit .
         optional {{ :{uuid} :ascii_name ?asciiName }}
         optional {{ :{uuid} :hasColorIdentity ?ci . ?ci :color_code ?cic }}
         optional {{ :{uuid} :isValidLeaderIn ?lf . ?lf :format_name ?lfn }}
-    }} group by ?name ?asciiName ?alternativeDeckLimit"""
+    }} group by ?name ?scryfallUUID ?asciiName ?alternativeDeckLimit"""
 
     res,err = run_query(query)
-    card = get_values(res["results"][0], name=str, alternative_deck_limit=to_bool, asciiName=str, colorIdentities=list, isValidLeaderIn=to_list(" "))
+    card = get_values(res["results"][0], name=str, scryfallUUID=str, alternative_deck_limit=to_bool, asciiName=str, colorIdentities=list, isValidLeaderIn=to_list(" "))
 
     printings_query = f"""
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
