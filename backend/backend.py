@@ -322,7 +322,6 @@ def deck(uuid):
         }} where {{
             bind(:{cardUUID} as ?c)
             bind(:{uuid} as ?d)
-            bind({qbind} as ?q)
         
             optional {{
                 ?d :hasDeckCard ?old_dc.
@@ -338,6 +337,7 @@ def deck(uuid):
                 bind(4 as ?limit)
             }}
             
+            bind({qbind} as ?q)
             bind(if(?q > 0,coalesce(?old_dc, bnode()),1+"") as ?dc)
             bind(if(bound(?limit) && ?limit < ?q,?limit,?q) as ?quantity)
         }}"""
