@@ -11,9 +11,9 @@
     rep:repositoryID "scatterer" ;
     rdfs:label "Wagic cards and where to find them" ;
     rep:repositoryImpl [
-        rep:repositoryType "graphdb:SailRepository" ;
+        rep:repositoryType "graphdb:FreeSailRepository" ;
         sr:sailImpl [
-            sail:sailType "graphdb:Sail" ;
+            sail:sailType "graphdb:FreeSail" ;
 
             graphdb:owlim-license "" ;
 

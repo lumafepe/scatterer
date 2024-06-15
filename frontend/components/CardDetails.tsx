@@ -42,6 +42,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ card }) => {
       setAdding(false);
     }
   }, [adding,card.scryfallUUID]);
+  
   return (
     <div className="max-w-full max-h-full mx-auto p-4">
       <Card isBlurred className="border-none bg-background/60 dark:bg-default-100/50" shadow="sm">

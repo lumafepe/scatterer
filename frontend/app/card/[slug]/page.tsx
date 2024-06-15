@@ -32,7 +32,6 @@ const CardPage: React.FC = () => {
       </div>
     ); 
   }
-
   return (
       <div className="container mx-auto p-4">
         <h1 className="text-4xl font-bold mb-4">Card Details</h1>
