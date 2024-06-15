@@ -13,7 +13,7 @@ const LeaderIn: React.FC<LeaderInProps> = ({ data }) => {
         </div>
         <Divider className='max-w-md'/>
         <ul className='ml-4'>
-          {data.map((format:string, _) => (<li>- {format}</li>))}
+          {data.map((format:string, pos) => (<li key={`${format}${pos}`}>- {format}</li>))}
         </ul>
     </div>
   );

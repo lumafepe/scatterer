@@ -6,13 +6,17 @@ import { IoArrowDownOutline,IoArrowUpOutline } from "react-icons/io5";
 import {Textarea,Input} from "@nextui-org/input";
 import {Select, SelectSection, SelectItem} from "@nextui-org/select";
 import { IoSearch } from "react-icons/io5";
+import { PressEvent } from "@react-types/shared"; // Import the PressEvent type
+
 interface SearchBarProps {
-    callback: Function;
+  callback: (e: PressEvent) => void;
 }
+
 interface SearchBarActiveProps {
-  callback: Function;
-  close:Function;
+  callback: (e: PressEvent) => void;
+  close: (e: PressEvent) => void;
 }
+
 
 const Inactive: React.FC<SearchBarProps> = ({ callback })=>{
   return(
@@ -27,7 +31,7 @@ const Inactive: React.FC<SearchBarProps> = ({ callback })=>{
   );
 }
 
-function CharToSymbol(symbol:string) {
+function CharToSymbol(symbol:any) {
   return <Image src={"/icons/"+symbol.toLowerCase()+".svg"} alt="/no-image.svg" width={20} height={20} className="mr-2" />
 }
 function Inclusivity2Text(s:Inclusivity){
@@ -46,21 +50,21 @@ function Inclusivity2Text(s:Inclusivity){
 }
 
 const Active: React.FC<SearchBarActiveProps> = ({ close,callback })=>{
-  const [name, setName] = useState<string>("");
-  const [colors,setColors] = useState<string[]>([]);
-  const [colorInclusivity,setColorInclusivity] = useState<Inclusivity>(Inclusivity.AnyOf);
-  const [types,setTypes] = useState<string>("");
-  const [manaValueMin,setManaValueMin] = useState<number>(0);
-  const [manaValueMax,setManaValueMax] = useState<number>(100);
-  const [keywords,setKeywords] = useState<string>("");
-  const [sets,setSets] = useState<string[]>([]);
-  const [formats,setFormats] = useState<{ [format: string]: Legality}>({});
-  const [leaderIn,setLeaderIn] = useState<string[]>([]);
+  const [name, setName] = useState<any>("");
+  const [colors,setColors] = useState<any>([]);
+  const [colorInclusivity,setColorInclusivity] = useState<any>(Inclusivity.AnyOf);
+  const [types,setTypes] = useState<any>("");
+  const [manaValueMin,setManaValueMin] = useState<any>(0);
+  const [manaValueMax,setManaValueMax] = useState<any>(100);
+  const [keywords,setKeywords] = useState<any>("");
+  const [sets,setSets] = useState<any>([]);
+  const [formats,setFormats] = useState<any>({});
+  const [leaderIn,setLeaderIn] = useState<any>([]);
   
   const leaderInOptions=["perdi","puta","ardeu","idfk"]; //TODO
   const setsOptions=["perdi","puta","ardeu","idfk"]; //TODO
   const formatOptions=["perdi","puta","ardeu","idfk"]; //TODO
-  function get_Filter():Filters{
+  function get_Filter():any{
     let f : Filters={
       types:[],
       keywords:[],
@@ -89,10 +93,10 @@ const Active: React.FC<SearchBarActiveProps> = ({ close,callback })=>{
             <Textarea variant="underlined" label="Types (one per line)" labelPlacement="outside" placeholder="Enter the Types" value={types} onValueChange={setTypes}/>
             <Textarea variant="underlined" label="Keywords (one per line)" labelPlacement="outside" placeholder="Enter the Keywords" value={keywords} onValueChange={setKeywords}/>
             <div className='flex justify-start'>
-              <Select label="Colors" selectionMode="multiple" placeholder="Select the colors" selectedKeys={colors} onSelectionChange={setColors}  renderValue={(items) => {return <div className='flex justify-start'>{items.map((item) => <h3 className='ml-4'>{CharToSymbol(item.key)}</h3>)}</div>}}>
+              <Select label="Colors" selectionMode="multiple" placeholder="Select the colors" selectedKeys={colors} onSelectionChange={setColors}  renderValue={(items) => {return <div className='flex justify-start'>{items.map((item) => <h3 className='ml-4' key={item.key}>{CharToSymbol(item.key)}</h3>)}</div>}}>
                 {['B','G','R','U','W'].map((key) => (<SelectItem key={key}>{CharToSymbol(key)}</SelectItem>))}
               </Select>
-              <Select label="Color Inclusivity" placeholder="Select the color inclusivity" selectedKey={colorInclusivity} onSelectionChange={setColorInclusivity} defaultSelectedKey={colorInclusivity}>
+              <Select label="Color Inclusivity" placeholder="Select the color inclusivity" selectedKeys={[colorInclusivity]} onSelectionChange={setColorInclusivity} defaultSelectedKeys={[colorInclusivity]}>
                 {[Inclusivity.AnyOf,Inclusivity.AtLeast,Inclusivity.AtMost,Inclusivity.Exactly].map((key) => (<SelectItem key={key}>{Inclusivity2Text(key)}</SelectItem>))}
               </Select>
             </div>
@@ -101,15 +105,15 @@ const Active: React.FC<SearchBarActiveProps> = ({ close,callback })=>{
               <Select label="Sets" selectionMode="multiple" placeholder="Select the sets" selectedKeys={sets} onSelectionChange={setSets} >
                 {leaderInOptions.map((key) => (<SelectItem key={key}>{key}</SelectItem>))}
               </Select>
-              <Select label="Leader In" selectionMode="multiple" placeholder="Select the leader in" selectedKey={leaderIn} onSelectionChange={setLeaderIn}>
+              <Select label="Leader In" selectionMode="multiple" placeholder="Select the leader in" selectedKeys={[leaderIn]} onSelectionChange={setLeaderIn}>
                 {setsOptions.map((key) => (<SelectItem key={key}>{key}</SelectItem>))}
               </Select>
             </div>
             <Card>
               <h5>Mana: </h5>
               <div className='flex justify-evenly'>
-                <Input type="number" label="Min" placeholder="0.00" labelPlacement="inside" value={manaValueMin} onValueChange={setManaValueMin} defaultSelectedKey={manaValueMin}/>
-                <Input type="number" label="Max" placeholder="0.00" labelPlacement="inside" value={manaValueMax} onValueChange={setManaValueMax} defaultSelectedKey={manaValueMax}/>
+                <Input type="number" label="Min" placeholder="0.00" labelPlacement="inside" value={manaValueMin} onValueChange={setManaValueMin}/>
+                <Input type="number" label="Max" placeholder="0.00" labelPlacement="inside" value={manaValueMax} onValueChange={setManaValueMax}/>
               </div>
             </Card>
             <Card>
@@ -117,10 +121,10 @@ const Active: React.FC<SearchBarActiveProps> = ({ close,callback })=>{
               {
                 Object.entries(formats).map(([key,value], _) => {
                   return(
-                  <Card>
+                  <Card key={key}>
                     <div className='flex justify-start'>
                       <h5>{key}</h5>
-                      <Select className='ml-4 max-w-32' label="Legality" placeholder="Select the legality" selectedKey={value} defaultSelectedKey={value} onSelectionChange={(v)=>{
+                      <Select className='ml-4 max-w-32' label="Legality" placeholder="Select the legality" onSelectionChange={(v)=>{
                         const newFormat = { ...formats};
                         newFormat[key]=v;
                         setFormats(newFormat);
@@ -135,7 +139,7 @@ const Active: React.FC<SearchBarActiveProps> = ({ close,callback })=>{
                 })
               }
               <Select label="Formats" selectionMode="multiple" placeholder="Select the formats" selectedKeys={Object.keys(formats)} onSelectionChange={
-                (l)=>setFormats(
+                (l:any)=>setFormats(
                   [...l].reduce(function(map, obj) {
                     if (obj in formats){
                       map[obj] = formats[obj];

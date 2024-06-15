@@ -6,7 +6,7 @@ import LeaderIn from './LeaderIn';
 import Legalities from './Legalities';
 import Side from './Side';
 import {Card, CardBody, Image, Button,Divider,Spacer} from "@nextui-org/react";
-import {addToDeck} from '@/api'
+import {updateDeckCard} from '@/api'
 import Cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 
@@ -34,14 +34,14 @@ const CardDetails: React.FC<CardDetailsProps> = ({ card }) => {
       const deck = getDeckCookie();
       if (deck === undefined) alert("Please select a deck first");
       else{
-        await addToDeck(deck,card.scryfallUUID);
+        await updateDeckCard(deck,card.scryfallUUID,1);
       }
     }
     if (adding===true){
       addCardToDeck();
       setAdding(false);
     }
-  }, [adding]);
+  }, [adding,card.scryfallUUID]);
   return (
     <div className="max-w-full max-h-full mx-auto p-4">
       <Card isBlurred className="border-none bg-background/60 dark:bg-default-100/50" shadow="sm">
@@ -63,7 +63,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ card }) => {
                       <strong>Alternative Deck Limit:</strong> {card.alternativeDeckLimit ? 'Yes' : 'No'}
                     </li>
                     <li>
-                      <strong>Color Identities:</strong> <span className="whitespace-nowrap">{card.colorIdentities.map((symbol, _) => (<div className="inline-block">{CharToSymbol(symbol)}</div>))}</span>
+                      <strong>Color Identities:</strong> <span className="whitespace-nowrap">{card.colorIdentities.map((symbol, pos) => (<div key={`${pos}${symbol}`} className="inline-block">{CharToSymbol(symbol)}</div>))}</span>
                     </li>
                   </ul>
                   <Spacer className='h-10'/>
@@ -82,7 +82,7 @@ const CardDetails: React.FC<CardDetailsProps> = ({ card }) => {
       <Spacer className='h-20'/>
       <div className="flex-1 flex"> {/* Container for card information */} {/* Card information container */}
         {Object.entries(card.sides).map(([key,value], _) => (
-          <div className="flex-1">
+          <div key={key} className="flex-1">
             <Side key={key} side={value} />
           </div>
         ))}
