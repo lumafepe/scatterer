@@ -40,12 +40,12 @@ def to_list(sep: str) -> callable:
 def with_sign(n: int) -> str:
     return str(n) if n < 0 else f"+{n}"
 
-def run_query(query):
+def select_query(query):
     result = None
-    error = ""
+    error = None
     try:
         response = requests.get(sparql_url, params={"query":query},headers={"Accept":"application/sparql-results+json"})
-        if response.status_code // 100 == 2:
+        if response.ok:
             ans = response.json()
             result = { "vars": ans['head']['vars'], "results": ans['results']['bindings'] }
         else:
@@ -53,6 +53,16 @@ def run_query(query):
     except Exception as e:
         error = f"Error requesting data: {e}"
     return (result, error)
+
+def update_query(query):
+    error = None
+    try:
+        response = requests.post(f"{sparql_url}/statements", params={"update":query},headers={"Accept":"application/sparql-results+json"})
+        if not response.ok:
+            error = f"Error response ({response.status_code}: {response.text}) from graphdb"
+    except Exception as e:
+        error = f"Error requesting data: {e}"
+    return error
 
 
 @app.route('/sets', methods = [ 'GET', 'OPTIONS' ])
@@ -66,7 +76,7 @@ def sets():
         ?s a :Set; :set_code ?code; :set_name ?name; :set_date ?date .
     }}"""
 
-    res,err = run_query(printings_query)
+    res,err = select_query(printings_query)
     return _corsify_actual_response([get_values(s, code=str, name=str, date=str) for s in res['results']])
 
 
@@ -84,7 +94,7 @@ def card(uuid):
         optional {{ :{uuid} :isValidLeaderIn ?lf . ?lf :format_name ?lfn }}
     }} group by ?name ?scryfallUUID ?asciiName ?alternativeDeckLimit"""
 
-    res,err = run_query(query)
+    res,err = select_query(query)
     card = get_values(res["results"][0], name=str, scryfallUUID=str, alternative_deck_limit=to_bool, asciiName=str, colorIdentities=list, isValidLeaderIn=to_list(" "))
 
     printings_query = f"""
@@ -94,7 +104,7 @@ def card(uuid):
         ?s :set_code ?code; :set_name ?name; :set_date ?date .
     }}"""
 
-    res,err = run_query(printings_query)
+    res,err = select_query(printings_query)
     card['printings'] = [get_values(p, code=str, name=str, date=str) for p in res['results']]
     
     legalities_query = f"""
@@ -108,7 +118,7 @@ def card(uuid):
         optional {{ :{uuid} :isBannedIn     ?f. bind("Banned"     as ?legality) }}
     }}"""
 
-    res,err = run_query(legalities_query)
+    res,err = select_query(legalities_query)
     card['legalities'] = {get_value(l['format']): get_value(l['legality']) for l in res['results']}
 
     rulings_query = f"""
@@ -118,7 +128,7 @@ def card(uuid):
         ?r :ruling_text ?text; :ruling_date ?date.
     }}"""
 
-    res,err = run_query(rulings_query)
+    res,err = select_query(rulings_query)
     card['rulings'] = [get_values(r, text=str, date=str) for r in res['results']]
 
     sides_query = f"""
@@ -143,8 +153,8 @@ def card(uuid):
     }} group by ?s ?manaValue ?text ?faceManaValue ?faceName ?defense ?hand ?life ?loyalty ?power ?toughness"""
 
     card['sides'] = []
-    res,err = run_query(sides_query)
-    sides = [get_values(s, s=str, manaValue=int, text=str, faceManaValue=int, faceName=str, defense=str, hand=str, life=str, loyalty=str, power=str, toughness=str, colors=list, colorIndicators=list, subtypes=to_list(' '), types=to_list(' '), supertypes=to_list(' ')) for s in res['results']]
+    res,err = select_query(sides_query)
+    sides = [select_query(s, s=str, manaValue=int, text=str, faceManaValue=int, faceName=str, defense=str, hand=str, life=str, loyalty=str, power=str, toughness=str, colors=list, colorIndicators=list, subtypes=to_list(' '), types=to_list(' '), supertypes=to_list(' ')) for s in res['results']]
 
     for s in sides:
         keywords_query = f"""
@@ -153,7 +163,7 @@ def card(uuid):
             :{s['s']} (:hasKeyword/:keyword_name) ?keyword
         }}"""
 
-        res,err = run_query(keywords_query)
+        res,err = select_query(keywords_query)
         s['keywords'] = [get_value(k['keyword']) for k in res['results']]
         del s['s']
         card['sides'].append(s)
@@ -252,7 +262,7 @@ def cards():
         }}
     }} limit {limit} offset {offset}"""
 
-    res, err = run_query(query)
+    res, err = select_query(query)
     return _corsify_actual_response([get_values(d, name=str, asciiName=str, scryfallUUID=str) for d in res["results"]])
 
 
@@ -262,16 +272,17 @@ def new_deck():
     if request.method == 'OPTIONS':
         return _build_cors_preflight_response()
 
-    name = request.form.get('name')
+    name = request.json.get('name')
     uuid = str(uuid4())
 
     query = f"""
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
     insert {{
-        :{uuid} a :Deck; :deck_name {json.dumps(name)}; :deck_uuid :{uuid}.
-    }}"""
+        :{uuid} a :Deck; :deck_name {json.dumps(name)}; :deck_uuid "{uuid}".
+    }} where {{}}"""
 
-    _,err = run_query(query)
+    err = update_query(query)
+    print(err)
     return _corsify_actual_response({"uuid": uuid, "name": name, "card_number": 0})
 
 
@@ -289,14 +300,14 @@ def deck(uuid):
             optional {{ ?c :ascii_name ?asciiName }}
         }}"""
         
-        res,err = run_query(query)
+        res,err = select_query(query)
         return _corsify_actual_response(
             [get_values(dc, name=str, asciiName=str, scryfallUUID=str, quantity=str) for dc in res["results"]]
         )
     elif request.method == 'PUT':
-        cardUUID = request.form.get('card')
-        increment = request.form.get('increment')
-        quantity = request.form.get('quantity')
+        cardUUID = request.json.get('card')
+        increment = request.json.get('increment')
+        quantity = request.json.get('quantity')
 
         qbind = quantity if quantity != None else f"coalesce(?old_q, 0){with_sign(increment)}"
         update = f"""
@@ -331,7 +342,7 @@ def deck(uuid):
             bind(if(bound(?limit) && ?limit < ?q,?limit,?q) as ?quantity)
         }}"""
 
-        _,err = run_query(update)
+        err = update_query(update)
 
 @app.route('/decks', methods = [ 'GET', 'OPTIONS' ])
 def decks():
@@ -341,11 +352,11 @@ def decks():
     query = """
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
     select ?uuid ?name (sum (?number) as ?card_number) where {
-        ?d a :Deck; :deck_uuid ?uuid; :deck_name ?name; :hasDeckCard ?dc .
-        ?dc :deckcard_quantity ?number .
+        ?d a :Deck; :deck_uuid ?uuid; :deck_name ?name.
+        optional { ?d (:hasDeckCard/:deckcard_quantity) ?number }
     } group by ?uuid ?name"""
 
-    res,err = run_query(query)
+    res,err = select_query(query)
     return _corsify_actual_response(
         [get_values(d, uuid=str, name=str, card_number=int) for d in res["results"]]
     )

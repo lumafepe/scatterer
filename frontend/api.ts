@@ -46,7 +46,7 @@ export async function fetchDecks(): Promise<Deck[]> {
 
 export async function createDeck(name: string): Promise<Deck> {
     const response = await API.post('/decks/new', {
-        name
+        name: name
     });
 
     return response.data;
