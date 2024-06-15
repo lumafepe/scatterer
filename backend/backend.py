@@ -85,7 +85,7 @@ def card(uuid):
     }} group by ?name ?asciiName ?alternativeDeckLimit"""
 
     res,err = run_query(query)
-    card = get_values(res["results"][0], name=str, alternative_deck_limit=to_bool, asciiName=str, colorIdentities=list, isValidLeaderIn=str)
+    card = get_values(res["results"][0], name=str, alternative_deck_limit=to_bool, asciiName=str, colorIdentities=list, isValidLeaderIn=to_list)
 
     printings_query = f"""
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
@@ -268,8 +268,10 @@ def new_deck():
     query = f"""
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
     insert {{
-        :{uuid} a :Deck; :deck_name {json.dumps(name)}; :deck_uuid {uuid}.
+        :{uuid} a :Deck; :deck_name {json.dumps(name)}; :deck_uuid :{uuid}.
     }}"""
+
+    print(query)
 
     _,err = run_query(query)
     return _corsify_actual_response({"uuid": uuid, "name": name, "card_number": 0})
