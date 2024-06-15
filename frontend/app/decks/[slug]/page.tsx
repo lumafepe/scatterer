@@ -14,7 +14,7 @@ const CardPage: React.FC = () => {
 
   useEffect(() => {
     async function fetchDeckCardsS() {
-        const res = await fetchDeckCards(slug);
+        const res = (typeof slug === "string") ? await fetchDeckCards(slug) : await fetchDeckCards(slug.join(''));
         setDeckCards(res);
         setIsLoading(false);
     }
@@ -34,7 +34,7 @@ const CardPage: React.FC = () => {
         {cards ?
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {cards.map((item, _) => (
-              <CardComp scryfallUUID={item.scryfallUUID} name={item.name} quantity={item.quantity} />
+              <CardComp key={item.scryfallUUID} scryfallUUID={item.scryfallUUID} name={item.name} quantity={item.quantity} />
           ))}
         </div>
         : <p>No cards found</p>}

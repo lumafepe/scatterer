@@ -2,22 +2,24 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from 'react';
 import CardDetails from '@/components/CardDetails';
-import { Card } from '@/interfaces';
+import { MagicCardDetails } from '@/interfaces';
 import {fetchCard} from '@/api';
+
 
 const CardPage: React.FC = () => {
   const params = useParams();
   const { slug } = params;
-  const [cardData, setCardData] = useState<Card | null>(null);
+  const [cardData, setCardData] = useState<MagicCardDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
 
   useEffect(() => {
+    async function fetchCardData() {
+      const res = (typeof slug === "string") ? await fetchCard(slug) : await fetchCard(slug.join(''));
+      setCardData(res);
+      setIsLoading(false);
+    }
     if (slug) {
-      async function fetchCardData() {
-        const res = await fetchCard(slug);
-        setCardData(res);
-        setIsLoading(false);
-      }
       fetchCardData();
     }
   }, [slug]);

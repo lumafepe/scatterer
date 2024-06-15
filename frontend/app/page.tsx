@@ -5,6 +5,7 @@ import CardComp from '@/components/CardComp';
 import SearchBar from '@/components/SearchBar'
 import {MagicCard,Filters} from '@/interfaces';
 import {Pagination} from "@nextui-org/react";
+import { PressEvent } from "@react-types/shared"; // Import the PressEvent type
 
 
 const CardPage: React.FC = () => {
@@ -37,12 +38,12 @@ const CardPage: React.FC = () => {
   }
   return (
     <div>
-      <SearchBar callback={(filter:Filters)=>{setIsLoading(true);setFilters(filter);}}/>
+      <SearchBar callback={(filter:any)=>{setIsLoading(true);setFilters(filter);}}/>
         <div className="container mx-auto p-4">
           {cards ?
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {cards.map((item, _) => (
-                <CardComp name={item.name} scryfallUUID={item.scryfallUUID} />
+                <CardComp key={item.scryfallUUID} name={item.name} scryfallUUID={item.scryfallUUID} />
             ))}
           </div>
           : <p>No cards found</p>}
