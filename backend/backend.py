@@ -85,7 +85,7 @@ def card(uuid):
     }} group by ?name ?asciiName ?alternativeDeckLimit"""
 
     res,err = run_query(query)
-    card = get_values(res["results"][0], name=str, alternative_deck_limit=to_bool, asciiName=str, colorIdentities=list, isValidLeaderIn=to_list)
+    card = get_values(res["results"][0], name=str, alternative_deck_limit=to_bool, asciiName=str, colorIdentities=list, isValidLeaderIn=to_list(" "))
 
     printings_query = f"""
     PREFIX : <http://rpcw.di.uminho.pt/2024/scatterer/>
