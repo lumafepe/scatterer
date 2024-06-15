@@ -27,7 +27,7 @@ def isValid(side):
         and ("firstPrinting" not in side or side["firstPrinting"] != "TBTH") \
         and (side["name"] not in badCards or "firstPrinting" in side) \
         and set(side["types"]).issubset(validTypes) \
-        and (side["display"] != "reversible_card")
+        and (side["layout"] != "reversible_card")
 
 def mainSet(s):
     return s['type'] in mainSets
