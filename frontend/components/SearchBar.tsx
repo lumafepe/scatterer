@@ -52,7 +52,6 @@ function Inclusivity2Text(s:Inclusivity){
 const Active: React.FC<SearchBarActiveProps> = ({ close,callback })=>{
   const [name, setName] = useState<any>("");
   const [colors,setColors] = useState<any>([]);
-  const [colorInclusivity,setColorInclusivity] = useState<any>(Inclusivity.AnyOf);
   const [types,setTypes] = useState<any>("");
   const [manaValueMin,setManaValueMin] = useState<any>(0);
   const [manaValueMax,setManaValueMax] = useState<any>(100);
@@ -69,8 +68,8 @@ const Active: React.FC<SearchBarActiveProps> = ({ close,callback })=>{
     if (name!="") f.name=name;
     if (types!="") f.types=types.split("\n");
     if (keywords!="") f.keywords=keywords.split("\n");
-    if (colors.length!=0) f.colors=colors.join('');
-    if (colors.length!=0) f.colorInclusivity=colorInclusivity;
+    if (colors.length!=0) f.colors=Array.from(colors).join('');
+    if (colors.length!=0) f.colorInclusivity=Inclusivity.AnyOf;
     if (manaValueMin!=0) f.manaValueMin = manaValueMin; 
     if (manaValueMax!=100) f.manaValueMax = manaValueMax;
     return f;
@@ -82,14 +81,9 @@ const Active: React.FC<SearchBarActiveProps> = ({ close,callback })=>{
             <Textarea variant="underlined" label="Name" labelPlacement="outside" placeholder="Enter the Name" value={name} onValueChange={setName}/>
             <Textarea variant="underlined" label="Types (one per line)" labelPlacement="outside" placeholder="Enter the Types" value={types} onValueChange={setTypes}/>
             <Textarea variant="underlined" label="Keywords (one per line)" labelPlacement="outside" placeholder="Enter the Keywords" value={keywords} onValueChange={setKeywords}/>
-            <div className='flex justify-start'>
-              <Select label="Colors" selectionMode="multiple" placeholder="Select the colors" selectedKeys={colors} onSelectionChange={setColors}  renderValue={(items) => {return <div className='flex justify-start'>{items.map((item) => <h3 className='ml-4' key={item.key}>{CharToSymbol(item.key)}</h3>)}</div>}}>
-                {['B','G','R','U','W'].map((key) => (<SelectItem key={key}>{CharToSymbol(key)}</SelectItem>))}
-              </Select>
-              <Select label="Color Inclusivity" placeholder="Select the color inclusivity" selectedKeys={[colorInclusivity]} onSelectionChange={setColorInclusivity} defaultSelectedKeys={[colorInclusivity]}>
-                {[Inclusivity.AnyOf,Inclusivity.AtLeast,Inclusivity.AtMost,Inclusivity.Exactly].map((key) => (<SelectItem key={key}>{Inclusivity2Text(key)}</SelectItem>))}
-              </Select>
-            </div>
+            <Select label="Colors" selectionMode="multiple" placeholder="Select the colors" selectedKeys={colors} onSelectionChange={setColors} renderValue={(items) => {return <div className='flex justify-start'>{items.map((item) => <h3 className='ml-4' key={item.key}>{CharToSymbol(item.key)}</h3>)}</div>}}>
+              {['B','G','R','U','W'].map((key) => (<SelectItem key={key}>{CharToSymbol(key)}</SelectItem>))}
+            </Select>
             <Divider className='max-w-fill mb-1 mt-1'/>
             <Card>
               <h5>Mana: </h5>
