@@ -111,9 +111,9 @@ Como já referido previamente, podemos testar a interface em http://localhost:30
 
 Da página inicial temos acesso também aos *********decks********* (http://localhost:3000/decks) que nos listar todos os decks existentes com o seu nome e o número de cartas existentes. Para além disso, é tambem possivel criar novos decks apartir desta página.
 
-Também podemos consultar uma carta `http://localhost:3000/card/{id}` onde podemos observar todo o conteúdo da carta, assim como adiciona-la a um *deck*.
+Também podemos consultar uma carta (http://localhost:3000/card/{id}) onde podemos observar todo o conteúdo da carta, assim como adiciona-la a um *deck*.
 
-Para consultar as cartas pertencentes a um *Deck* basta aceder a `http://localhost:3000/decks/{id}`.
+Para consultar as cartas pertencentes a um *Deck* basta aceder a (http://localhost:3000/decks/{id}).
 
 
 
