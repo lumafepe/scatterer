@@ -70,7 +70,7 @@ Desenvolvido em Flask, providencia uma **Restfull** API com a qual o *frontend* 
 3. **Base de dados (GraphDB)**
 Desenvolvida em GraphDB, contém todos os dados do sistema, incluindo cartas e decks.
 
-![image](https://github.com/lumafepe/rpcw-proj/arq.svg)
+![image](https://github.com/lumafepe/rpcw-proj/blob/main/arq.svg)
 
 # Desenvolvimento do ***Backend***
 
