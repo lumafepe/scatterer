@@ -49,8 +49,8 @@ function NavBar() {
                 </NavbarItem>
             </NavbarContent>
             <NavbarContent justify="end">
-              <NavbarItem>
-                <Select selectedKeys={(currDeck === undefined)?[]:[currDeck]} isLoading={(DecksData.length === 0)} label="Select Deck" className="w-32" onChange={setDeckCookie}>
+              <NavbarItem className='items-center'>
+                <Select selectedKeys={(currDeck === undefined)?[]:[currDeck]} isLoading={(DecksData.length === 0)} label="Select Deck" className="w-48" onChange={setDeckCookie}>
                     {
                     DecksData.map((x : Deck) => (
                         <SelectItem key={x.uuid}>
@@ -59,7 +59,7 @@ function NavBar() {
                         )
                     }
                 </Select>
-                <Button isIconOnly data-hover="Refresh decks" onPressEnd={()=>{setDecksData([]);}} >
+                <Button color='warning' isIconOnly data-hover="Refresh decks" onPressEnd={()=>{setDecksData([]);}} >
                     <AiOutlineRedo />
                 </Button>
               </NavbarItem>

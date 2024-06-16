@@ -82,11 +82,11 @@ const CardDetails: React.FC<CardDetailsProps> = ({ card }) => {
       {/*SideDetails components */}
       <Spacer className='h-20'/>
       <div className="flex-1 flex"> {/* Container for card information */} {/* Card information container */}
-        {Object.entries(card.sides).map(([key,value], _) => (
+        {Object.entries(card.sides).map(([key,value], i) => 
           <div key={key} className="flex-1">
             <Side key={key} side={value} />
           </div>
-        ))}
+        )}
       </div>
         
       <Spacer className='h-10'/>

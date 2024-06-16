@@ -39,8 +39,9 @@ const CardPage: React.FC = () => {
           <Input className='mr-4 max-w-64' type="string" label="Deck Name" placeholder="" labelPlacement="inside" value={addDeckCard} onValueChange={setAddDeckCard}/>
           <Button className='w-max' color='warning' isIconOnly onPress={async ()=>{
               const a:Deck = await createDeck(addDeckCard);
+              const b:Deck[] = [];
               if (cardData===null) setDecksData([a]);
-              else setDecksData([].concat(cardData, a));
+              else setDecksData(b.concat(cardData, a));
               setIsLoading(true);
             }}><FaPlus /></Button>
         </div>

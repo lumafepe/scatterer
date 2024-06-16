@@ -57,13 +57,6 @@ const Active: React.FC<SearchBarActiveProps> = ({ close,callback })=>{
   const [manaValueMin,setManaValueMin] = useState<any>(0);
   const [manaValueMax,setManaValueMax] = useState<any>(100);
   const [keywords,setKeywords] = useState<any>("");
-  const [sets,setSets] = useState<any>([]);
-  const [formats,setFormats] = useState<any>({});
-  const [leaderIn,setLeaderIn] = useState<any>([]);
-  
-  const leaderInOptions=["perdi","puta","ardeu","idfk"]; //TODO
-  const setsOptions=["perdi","puta","ardeu","idfk"]; //TODO
-  const formatOptions=["perdi","puta","ardeu","idfk"]; //TODO
   function get_Filter():any{
     let f : Filters={
       types:[],
@@ -78,11 +71,8 @@ const Active: React.FC<SearchBarActiveProps> = ({ close,callback })=>{
     if (keywords!="") f.keywords=keywords.split("\n");
     if (colors.length!=0) f.colors=colors.join('');
     if (colors.length!=0) f.colorInclusivity=colorInclusivity;
-    if (sets.length!=0) f.sets = sets;
-    if (leaderIn.length!=0) f.leaderIn = leaderIn;
     if (manaValueMin!=0) f.manaValueMin = manaValueMin; 
     if (manaValueMax!=100) f.manaValueMax = manaValueMax;
-    f.formats=formats;
     return f;
   }
   return(
@@ -101,14 +91,6 @@ const Active: React.FC<SearchBarActiveProps> = ({ close,callback })=>{
               </Select>
             </div>
             <Divider className='max-w-fill mb-1 mt-1'/>
-            <div className='flex justify-start'>
-              <Select label="Sets" selectionMode="multiple" placeholder="Select the sets" selectedKeys={sets} onSelectionChange={setSets} >
-                {leaderInOptions.map((key) => (<SelectItem key={key}>{key}</SelectItem>))}
-              </Select>
-              <Select label="Leader In" selectionMode="multiple" placeholder="Select the leader in" selectedKeys={[leaderIn]} onSelectionChange={setLeaderIn}>
-                {setsOptions.map((key) => (<SelectItem key={key}>{key}</SelectItem>))}
-              </Select>
-            </div>
             <Card>
               <h5>Mana: </h5>
               <div className='flex justify-evenly'>
@@ -116,50 +98,14 @@ const Active: React.FC<SearchBarActiveProps> = ({ close,callback })=>{
                 <Input type="number" label="Max" placeholder="0.00" labelPlacement="inside" value={manaValueMax} onValueChange={setManaValueMax}/>
               </div>
             </Card>
-            <Card>
-              <h5>Formats: </h5>
-              {
-                Object.entries(formats).map(([key,value], _) => {
-                  return(
-                  <Card key={key}>
-                    <div className='flex justify-start'>
-                      <h5>{key}</h5>
-                      <Select className='ml-4 max-w-32' label="Legality" placeholder="Select the legality" onSelectionChange={(v)=>{
-                        const newFormat = { ...formats};
-                        newFormat[key]=v;
-                        setFormats(newFormat);
-                        }}>
-                          <SelectItem key={Legality.Legal}>Legal</SelectItem>
-                          <SelectItem key={Legality.Restricted}>Restricted</SelectItem>
-                          <SelectItem key={Legality.Banned}>Banned</SelectItem>
-                      </Select>
-                    </div>
-                  </Card>
-                  );
-                })
-              }
-              <Select label="Formats" selectionMode="multiple" placeholder="Select the formats" selectedKeys={Object.keys(formats)} onSelectionChange={
-                (l:any)=>setFormats(
-                  [...l].reduce(function(map, obj) {
-                    if (obj in formats){
-                      map[obj] = formats[obj];
-                    } else{
-                      map[obj] = Legality.Legal;
-                    }
-                    return map;
-                  }, {})
-                )}>
-              {formatOptions.map((key) => (<SelectItem key={key}>{key}</SelectItem>))}
-            </Select>
-            </Card>
           </CardBody>
           <Button color='warning' isIconOnly onPress={()=>callback(get_Filter())}><IoSearch /></Button>
-         <Card isPressable onPress={close}>
-            <div className='inline-flex justify-start'>
-              <h3>Search</h3>
-              <IoArrowUpOutline className='ml-4'/>
-            </div>
-         </Card>
+          <Card isPressable onPress={close}>
+             <div className='inline-flex justify-start'>
+               <h3>Search</h3>
+               <IoArrowUpOutline className='ml-4'/>
+             </div>
+          </Card>
       </Card>
     </div>
   );

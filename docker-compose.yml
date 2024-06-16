@@ -14,3 +14,12 @@ services:
     network_mode: "host"
     depends_on:
       - graphdb
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    network_mode: "host"
+    depends_on:
+      - backend
